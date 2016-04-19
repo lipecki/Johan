@@ -81,11 +81,11 @@ int main(int argc,char const *argv[])
     }
     syslog(LOG_INFO, "listening for up to 4 connections!\n");
     
+    struct sigaction sa;
+    sa.sa_handler = sigchld_handlr; // reap all dead processes
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
     for(;;) {
-        struct sigaction sa;
-        sa.sa_handler = sigchld_handlr; // reap all dead processes
-        sigemptyset(&sa.sa_mask);
-        sa.sa_flags = SA_RESTART;
         if (sigaction(SIGCHLD, &sa, NULL) == -1) {      //WNOHANG!
             syslog(LOG_ERR,  "%s",strerror(errno));
             exit(EXIT_FAILURE);
