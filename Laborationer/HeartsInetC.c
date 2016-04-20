@@ -41,8 +41,6 @@ int main(int argc,char const *argv[])
         syslog(LOG_ERR, "%s", strerror(errno));
         exit(EXIT_FAILURE);
     }
-    //strcpy(remote.sun_path,argv[1]);
-    //len = strlen(remote.sun_path) + sizeof(remote.sun_family);
     if (connect(s, (struct sockaddr *)&inet, sizeof(inet)) == -1) {
         syslog(LOG_ERR,"%s",strerror(errno));
         exit(1);
@@ -52,18 +50,28 @@ int main(int argc,char const *argv[])
     //om strängen inte är "ENDOFTRANS" från endoftrans()!!)
 
 
-    while(printf("Ange kommando > ") && fgets(arguments,sizeof(arguments),stdin)) {
-        arguments[strlen(arguments)-1]='\0';
+    for(i=0;i<2;i++){
+        switch (i) {
+            case 0:
+                arguments=SYN0;
+                break;
+            case 1:
+                arguments=SYN1;
+                break;
+            default:
+                syslog(LOG_ERR,"SYN-ACK");
+                break;
+        }
         if (send(s, arguments,sizeof(arguments), 0) == -1) {
-          perror("send");
-          exit(1);
+            syslog(LOG_ERR,"%s",strerror(errno));
+            exit(1);
         }
          //om strängen inte är "ENDOFTRANS"  {
         while((t=recv(s, str, 100, 0)) > 0) {
             str[t] = '\0';
             if(!(strcmp("ENDOFTRANS",str))){
-                printf(")
-            };
+                printf("That's all folks!");
+            }
             else printf("%s", str);
         }
         if(t < 0){
@@ -71,8 +79,9 @@ int main(int argc,char const *argv[])
             exit(1);
         } else if (t==0) printf("Server closed connection\n");
     }
-  close(s);
-  return 0;
+    close(s);
+    closelog();
+    return 0;
 }
 
 

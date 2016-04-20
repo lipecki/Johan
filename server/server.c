@@ -22,6 +22,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include "port_hearts.h"
 
 /* Change this to whatever your daemon is called */
 #define DAEMON_NAME "HEARTS_SERVER"
@@ -29,12 +30,6 @@
 /* Change this to the user under which to run */
 #define RUN_AS_USER "Grupp_7"
 #define IP_ADDRESS "130.237.84.89"
-#define SYN0 "hearts"
-#define ACK0 "diamonds"
-#define SYN1 "port"
-
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
 
 void sigchld_handlr(int);
 void sigchld_handler(int);
@@ -157,47 +152,6 @@ void sigchld_handler(int s)
         default:        exit((long) SIG_DFL); break;
     }
 }
-int syn_ack(char* arguments,int fd,int i){
-    pid_t child_pid;
-    int port;
-    /* Duplicate this process. */
-    child_pid = fork ();
-    if(child_pid != 0){
-        /* This is the parent process. */
-        close(1);
-        wait(0);
-        return 0;
-    }
-        
-    else {
-        //Redirect stdout to socket
-        close(1);
-        dup(fd);
-        //SYN-ACK switch
-        switch (arguments) {
-            case SYN0:
-                if(!i) arguments=ACK0;
-                break;
-            case SYN1:
-                if(i==1){
-                    //svara med portnummer och starta spelservern
-                    arguments=get_random_port_numer();
-                    if(!(start_game_server(port,client_ip)))
-                }
-                break;
-            default:
-                arguments="it's the ping of death for you my friend!";
-                return SIGTERM;
-        }
-        /* Now execute the commands in a new session*/
-        execlp("/bin/sh","bash","-c", "echo" ,arguments, NULL);
-        /* The execlp function returns only if an error occurs. */
-        syslog(LOG_ERR,"%s",strerror(errno));
-        abort();
-    }
-    //This never happens!
-    return 0;
-}
 void daemonize(const char *lockfile)
 {
     pid_t pid, sid, parent,child;
@@ -217,7 +171,7 @@ void daemonize(const char *lockfile)
     //printf("Ready for the lockfile!\n");
     /* Create the lock file as the current user */
     if ( lockfile && lockfile[0] ) {
-        lfp = open(lockfile,O_RDWR|O_CREAT,0640);   //|O_EXCL taken care of in the start-file
+        lfp = open(lockfile,O_RDWR|O_EXCL,0640);   //|O_EXCL taken care of in the start-file
         if ( lfp < 0 ) {
             syslog( LOG_ERR, "unable to create lock file %s, code=%d (%s)\n",
                    lockfile, errno, strerror(errno) );
@@ -300,7 +254,7 @@ void daemonize(const char *lockfile)
     freopen("/dev/null", "w", stderr);
     
     /* Tell the parent process that we are A-okay */
-    kill(parent, SIGUSR1 );
+    kill(getppid(), SIGUSR1 );
 }
 
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:server/server.c">
+   </FileRef>
+   <FileRef
+      location = "group:port_hearts.c">
+   </FileRef>
+   <FileRef
+      location = "group:port_hearts.h">
+   </FileRef>
+</Workspace>
