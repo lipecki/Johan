@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "50B2A47E28AD2820461731769EF59FF9C943E087",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "50B2A47E28AD2820461731769EF59FF9C943E087" : 0,
+    "50ACC42559183552D90312A737CFA239E0E13592" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "5E9E3DA0-CB2E-43F0-A3CC-40AEA3BF85ED",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "50B2A47E28AD2820461731769EF59FF9C943E087" : "Johan\/",
+    "50ACC42559183552D90312A737CFA239E0E13592" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Authenticate",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Laborationer\/Authenticate.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gr7projekt\/hearts.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "50ACC42559183552D90312A737CFA239E0E13592"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/lipecki\/Johan.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "50B2A47E28AD2820461731769EF59FF9C943E087"
+    }
+  ]
+}

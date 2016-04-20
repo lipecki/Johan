@@ -37,7 +37,7 @@
 void sigchld_handlr(int);
 void sigchld_handler(int);
 void daemonize(const char *);
-int hearts (char *,int);
+int syn_ack (char *,int,int);
 
 int main(int argc,char const *argv[])
 {
@@ -103,16 +103,16 @@ int main(int argc,char const *argv[])
         }
         else if(!pid){                              //serverbarnet ärver accepten, socketen och fildeskriptorn.
             syslog(LOG_INFO,"Connected.\n");
-            
+            int i=0;
             done = 0;
             do {
                 r = recv(s2, arguments,100, 0);
                 if (r <= 0) {
                     if (r < 0) perror("recv");
                     done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
-                }                                               //om recv returnerar 0 eller -1.
+                }
                 if (!done){                                     //Inget fel eller avslut, enligt tilldelning
-                    if(!(hearts(arguments,s2))){
+                    if(!(syn_ack(arguments,s2,i))){
                         strcpy(arguments,"ENDOFTRANS");
                         if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
                             perror("send");
@@ -120,8 +120,7 @@ int main(int argc,char const *argv[])
                         }
                         else done = 0;
                     }
-                    //memset(arguments,'\0',sizeof(arguments));
-                }
+                } i++;
             } while (!done);                        //så länge klienten skickar data håller vi öppet 24/7
             printf("I'm server %d and my client just signed off!\n",getpid());
             syslog(LOG_NOTICE, "terminated" );
@@ -155,6 +154,47 @@ void sigchld_handler(int s)
         case SIGCHLD:   exit(2); break;            
         default:        exit((long) SIG_DFL); break;
     }
+}
+int syn_ack(char* arguments,int fd,int i){
+    pid_t child_pid;
+    int port;
+    /* Duplicate this process. */
+    child_pid = fork ();
+    if(child_pid != 0){
+        /* This is the parent process. */
+        close(1);
+        wait(0);
+        return 0;
+    }
+        
+    else {
+        //Redirect stdout to socket
+        close(1);
+        dup(fd);
+        //SYN-ACK switch
+        switch (arguments) {
+            case SIG0:
+                if(!i) arguments=ACK0;
+                break;
+            case SIG1:
+                if(i==1){
+                    //svara med portnummer och starta spelservern
+                    arguments=get_random_port_numer();
+                    if(!(start_game_server(port,client_ip)))
+                }
+                break;
+            default:
+                arguments="it's the ping of death for you my friend!";
+                return SIGTERM;
+        }
+        /* Now execute the commands in a new session*/
+        execlp("/bin/sh","bash","-c", "echo" ,arguments, NULL);
+        /* The execlp function returns only if an error occurs. */
+        syslog(LOG_ERR,"%s",strerror(errno));
+        abort();
+    }
+    //This never happens!
+    return 0;
 }
 void daemonize(const char *lockfile)
 {
@@ -261,36 +301,7 @@ void daemonize(const char *lockfile)
     kill(parent, SIGUSR1 );
 }
 
-int hearts (char* arguments,int fd){
-    pid_t child_pid;
-    if(strcmp("quit",arguments)){             //Avsluta
-        close(1);
-        dup(fd);
-        return SIGTERM;
-    }
-    else {
-        /* Duplicate this process. */
-        child_pid = fork ();
-        if (child_pid != 0){
-            /* This is the parent process. */
-            close(1);
-            wait(0);
-            return 0;
-        }
-        
-        else {
-            //Redirect stdout to socket
-            close(1);
-            dup(fd);
-            /* Now execute the commands in a new session*/
-            execlp("/bin/sh","bash","-c", "echo Hello World!", NULL);
-            /* The execlp function returns only if an error occurs. */
-            perror("Exec\n");
-            abort ();
-        }
-    }
-    return 0;
-}
+
 
 
 
