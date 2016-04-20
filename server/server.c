@@ -28,8 +28,10 @@
 
 /* Change this to the user under which to run */
 #define RUN_AS_USER "Grupp_7"
-
 #define IP_ADDRESS "130.237.84.89"
+#define SYN0 "hearts"
+#define ACK0 "diamonds"
+#define SYN1 "port"
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
@@ -173,10 +175,10 @@ int syn_ack(char* arguments,int fd,int i){
         dup(fd);
         //SYN-ACK switch
         switch (arguments) {
-            case SIG0:
+            case SYN0:
                 if(!i) arguments=ACK0;
                 break;
-            case SIG1:
+            case SYN1:
                 if(i==1){
                     //svara med portnummer och starta spelservern
                     arguments=get_random_port_numer();
