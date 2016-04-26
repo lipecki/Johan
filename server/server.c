@@ -116,7 +116,8 @@ int main(int argc,char const *argv[])
                         }
                         //skicka portnummer till klienten!
                         strlcpy(arguments,itoa(port),7);
-                        arguments += itoa(connections%4);
+                        strcat(arguments, " ");
+			strcat(arguments,itoa(connections%4));
                         if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
                             perror("send");
                             done = 1;                   //försäkrar oss om att accept-loopen avslutas
