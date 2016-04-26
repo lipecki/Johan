@@ -8,10 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <time.h>
 #include "port_hearts.h"
 
 int static get_random_port_numer(int *);
-int start_game_server(int *seed){
+int start_game_server(){
     
     /* Öppna en csv-fil som spar IP-nummer för spelarna och porten de ansluter mot
      * Räkna anslutna spelare
@@ -30,7 +31,7 @@ int start_game_server(int *seed){
     if(new_table_needed){
         fgetc(fp);
         fputc(0,fp);
-        port=get_random_port_numer(seed);
+        port=get_random_port_numer();
         if(!(fork())){
             //Executing as child process
             execlp("bin/sh","sh","-c",GAME_SERVER,port,NULL);
@@ -43,8 +44,8 @@ int start_game_server(int *seed){
         }
     }
 }
-int static get_random_port_numer(int *seed){
-    srandom(*seed);
+int static get_random_port_numer(){
+    srandom(time(NULL));
     return (random()%10000 + 40000);
 }
 int syn_ack(char* arguments,int fd,int i){
