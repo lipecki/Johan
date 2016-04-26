@@ -22,7 +22,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include "port_hearts.h"
+#include "../port_hearts.h"
 
 /* Change this to whatever your daemon is called */
 #define DAEMON_NAME "HEARTS_SERVER"
@@ -34,11 +34,10 @@
 void sigchld_handlr(int);
 void sigchld_handler(int);
 void daemonize(const char *);
-int syn_ack (char *,int,int);
 
 int main(int argc,char const *argv[])
 {
-    int done, pid, s2, inet_fd;
+    int done, pid, s2, inet_fd, connections=0;
     ssize_t r;
     socklen_t t;
     struct sockaddr_in inet, inet2;
@@ -72,11 +71,11 @@ int main(int argc,char const *argv[])
         exit(1);
     } else syslog(LOG_INFO, "Socket bound!\n");
     
-    if (listen(inet_fd, 4) == -1) {
+    if (listen(inet_fd, 8) == -1) {             //8 connections will serve 2 games
         syslog(LOG_ERR,  "%s",strerror(errno));
         exit(1);
     }
-    syslog(LOG_INFO, "listening for up to 4 connections!\n");
+    syslog(LOG_INFO, "listening for up to 8 connections!\n");
     
     struct sigaction sa;
     sa.sa_handler = sigchld_handlr; // reap all dead processes
@@ -109,22 +108,30 @@ int main(int argc,char const *argv[])
                     done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
                 }
                 if (!done){                                     //Inget fel eller avslut, enligt tilldelning
-                    if(!(syn_ack(arguments,s2,i))){
-                        strcpy(arguments,"ENDOFTRANS");
+                    if(!(syn_ack(arguments,i,s2))){
+                        //svara med portnummer och starta spelservern
+                        if(!(port=start_game_server((connections%4)))){
+                            syslog(LOG_ERR,"no port assigned to game server");
+                            exit(EXIT_FAILURE);
+                        }
+                        //skicka portnummer till klienten!
+                        strlcpy(arguments,itoa(port),7);
+                        arguments += itoa(connections%4);
                         if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
                             perror("send");
                             done = 1;                   //försäkrar oss om att accept-loopen avslutas
                         }
                         else done = 0;
                     }
-                } i++;
-            } while (!done);                        //så länge klienten skickar data håller vi öppet 24/7
+                } i++; //syn-ack räknare
+            } while (!done);
             printf("I'm server %d and my client just signed off!\n",getpid());
             syslog(LOG_NOTICE, "terminated" );
             closelog();
             exit(0);
         }
         else close(s2);
+        connections++;
     }
     /* Finish up */
     return 0;

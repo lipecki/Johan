@@ -11,26 +11,13 @@
 #include <time.h>
 #include "port_hearts.h"
 
-int static get_random_port_numer(int *);
-int start_game_server(){
-    
-    /* Öppna en csv-fil som spar IP-nummer för spelarna och porten de ansluter mot
-     * Räkna anslutna spelare
-     * forka processen när det finns fyra spelare */
-    int players,new_table_needed=0;
+#define PARENT 1
+
+int static get_random_port_numer(void);
+int start_game_server(int players){
+     /* forka processen när spelare 0 ansluter*/
     int static port;
-    FILE static *fp;
-    fp=fopen("game_server_counter","r+");
-    if((players=fgetc(fp))!=EOF){
-        if (players<4) players++;
-        else if (players==4) new_table_needed=1;
-        else syslog(LOG_ERR,"Too many players!");
-    } else (players=1);
-    fputc(players,fp)
-    
-    if(new_table_needed){
-        fgetc(fp);
-        fputc(0,fp);
+    if(!players){
         port=get_random_port_numer();
         if(!(fork())){
             //Executing as child process
@@ -38,7 +25,6 @@ int start_game_server(){
             syslog(LOG_ERR,"%s",strerror(errno));
         }
         else {
-            close(1);
             return port;
             //no waiting around for child? zombie creator?
         }
@@ -48,7 +34,7 @@ int static get_random_port_numer(){
     srandom(time(NULL));
     return (random()%10000 + 40000);
 }
-int syn_ack(char* arguments,int fd,int i){
+int syn_ack(char* arguments,int syn,int fd){
     pid_t child_pid;
     int static port;
     /* Duplicate this process. */
@@ -57,7 +43,6 @@ int syn_ack(char* arguments,int fd,int i){
         /* This is the parent process. */
         close(1);
         wait(0);
-        return 0;
     }
     
     else {
@@ -67,18 +52,10 @@ int syn_ack(char* arguments,int fd,int i){
         //SYN-ACK switch
         switch (arguments) {
             case SYN0:
-                if(!i) arguments=ACK0;
+                if(!syn) arguments=ACK0;
                 break;
             case SYN1:
-                if(i==1){
-                    //svara med portnummer och starta spelservern
-                    if(!(port=start_game_server())){
-                        syslog(LOG_ERR,"no port assigned to game server");
-                        exit(EXIT_FAILURE);
-                    }
-                    //skicka portnummer till klienten!
-                    strlcpy(arguments,itoa(port),7);
-                }
+                if(syn==1) return 0;
                 break;
             default:
                 arguments="it's the ping of death for you my friend!";
@@ -90,7 +67,6 @@ int syn_ack(char* arguments,int fd,int i){
         syslog(LOG_ERR,"%s",strerror(errno));
         abort();
     }
-    //This never happens!
-    return 0;
+    return PARENT;
 }
 

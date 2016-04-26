@@ -19,7 +19,7 @@
 #define EXIT_FAILURE 1
 
 #include <stdio.h>
-int start_game_server(int);
-int syn_ack(char *,int,int);
+int start_game_server(int); //
+int syn_ack(char *,int,int); 
 
 #endif /* port_hearts_h */
