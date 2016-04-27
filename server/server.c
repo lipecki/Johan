@@ -37,7 +37,11 @@ void daemonize(const char *);
 
 int main(int argc,char const *argv[])
 {
+<<<<<<< Updated upstream
     int pid, s2, inet_fd, connections=0;
+=======
+    int done, pid, s2, inet_fd, connections=0;
+>>>>>>> Stashed changes
     ssize_t r;
     socklen_t t;
     struct sockaddr_in inet, inet2;
@@ -115,10 +119,15 @@ int main(int argc,char const *argv[])
                             exit(EXIT_FAILURE);
                         }
                         //skicka portnummer till klienten!
+<<<<<<< Updated upstream
                         sprintf(ascii_port, "%d", port);
 			strlcpy(arguments,ascii_port,7);
 			sprintf(arg2," %d",connections%4);
 			strcat(arguments,arg2);
+=======
+                        strlcpy(arguments,itoa(port),7);
+                        arguments += itoa(connections%4);
+>>>>>>> Stashed changes
                         if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
                             perror("send");
                             done = 1;                   //försäkrar oss om att accept-loopen avslutas
