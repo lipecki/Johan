@@ -1,6 +1,6 @@
 //
-//  main.c
-//  Test
+//  
+//  Autentiseringsserver för  
 //
 //  Created by Johan Lipecki on 2016-04-01.
 //  Copyright © 2016 Johan Lipecki. All rights reserved.
@@ -37,7 +37,7 @@ void daemonize(const char *);
 
 int main(int argc,char const *argv[])
 {
-    int pid, s2, inet_fd, connections=0;
+    int done, pid, s2, inet_fd, connections=0;
     ssize_t r;
     socklen_t t;
     struct sockaddr_in inet, inet2;
@@ -99,8 +99,8 @@ int main(int argc,char const *argv[])
         }
         else if(!pid){                              //serverbarnet ärver accepten, socketen och fildeskriptorn.
             syslog(LOG_INFO,"Connected.\n");
-            int port, i=0, done = 0;
-            char arg2[3],ascii_port[6];
+            int i=0;
+            done = 0;
             do {
                 r = recv(s2, arguments,100, 0);
                 if (r <= 0) {
@@ -115,10 +115,8 @@ int main(int argc,char const *argv[])
                             exit(EXIT_FAILURE);
                         }
                         //skicka portnummer till klienten!
-                        sprintf(ascii_port, "%d", port);
-			strlcpy(arguments,ascii_port,7);
-			sprintf(arg2," %d",connections%4);
-			strcat(arguments,arg2);
+                        strlcpy(arguments,itoa(port),7);
+                        arguments += itoa(connections%4);
                         if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
                             perror("send");
                             done = 1;                   //försäkrar oss om att accept-loopen avslutas

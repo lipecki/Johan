@@ -44,23 +44,14 @@ int syn_ack(char* arguments,int syn,int fd){
         close(1);
         wait(0);
     }
-    
     else {
         //Redirect stdout to socket
         close(1);
         dup(fd);
         //SYN-ACK switch
-        switch (arguments) {
-            case SYN0:
-                if(!syn) arguments=ACK0;
-                break;
-            case SYN1:
-                if(syn==1) return 0;
-                break;
-            default:
-                arguments="it's the ping of death for you my friend!";
-                break;
-        }
+        if(arguments == SYN0) if(!syn) arguments = ACK0;
+        else if(arguments == SYN1) if(syn==1) return 0;
+        else arguments="it's the ping of death for you my friend!";
         /* Now execute the commands in a new session*/
         execlp("/bin/sh","bash","-c", "echo" ,arguments, NULL);
         /* The execlp function returns only if an error occurs. */

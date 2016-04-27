@@ -22,7 +22,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include "../port_hearts.h"
+#include "port_hearts.h"
 
 /* Change this to whatever your daemon is called */
 #define DAEMON_NAME "HEARTS_SERVER"
