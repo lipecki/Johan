@@ -100,7 +100,8 @@ int main(int argc,char const *argv[])
         else if(!pid){                              //serverbarnet ärver accepten, socketen och fildeskriptorn.
             syslog(LOG_INFO,"Connected.\n");
             int port, i=0, done = 0;
-            char arg2[3],ascii_port[6];
+            char arg2[3]={'\0'},ascii_port[6]={'\0'};
+            memset(ascii_port,'\0',(size_t) sizeof(ascii_port));
             do {
                 r = recv(s2, arguments,100, 0);
                 if (r <= 0) {
@@ -116,7 +117,7 @@ int main(int argc,char const *argv[])
                         }
                         //skicka portnummer till klienten!
                         sprintf(ascii_port, "%d", port);
-                        strlcpy(arguments,ascii_port,7);
+                        strcpy(arguments,ascii_port);
                         sprintf(arg2," %d",connections%4);
                         strcat(arguments,arg2);
                         if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
