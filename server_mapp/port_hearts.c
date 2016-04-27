@@ -5,11 +5,25 @@
 //  Created by Johan Lipecki on 2016-04-20.
 //
 //
+#include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 #include <fcntl.h>
+#include <syslog.h>
+#include <pwd.h>
+#include <signal.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 #include <time.h>
 #include "port_hearts.h"
+
 
 #define PARENT 1
 
@@ -43,8 +57,10 @@ int syn_ack(char* arguments,int syn,int fd){
         /* This is the parent process. */
         close(1);
         wait(0);
+        return 0;
     }
     else {
+        //child
         //Redirect stdout to socket
         close(1);
         dup(fd);

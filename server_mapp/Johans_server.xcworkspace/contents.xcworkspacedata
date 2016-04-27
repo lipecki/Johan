@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:server/server.c">
+      location = "group:server.c">
    </FileRef>
    <FileRef
       location = "group:port_hearts.c">
