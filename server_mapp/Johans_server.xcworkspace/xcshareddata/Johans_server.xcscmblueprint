@@ -5,12 +5,14 @@
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "50B2A47E28AD2820461731769EF59FF9C943E087" : 0,
-    "50ACC42559183552D90312A737CFA239E0E13592" : 0
+    "50ACC42559183552D90312A737CFA239E0E13592" : 0,
+    "A00FD2700CB4EB2D17B501CEF73526F3201F8809" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "149FD2C7-738B-4D78-8BBA-900BDB8822D3",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "50B2A47E28AD2820461731769EF59FF9C943E087" : "Johan\/",
-    "50ACC42559183552D90312A737CFA239E0E13592" : ""
+    "50ACC42559183552D90312A737CFA239E0E13592" : "",
+    "A00FD2700CB4EB2D17B501CEF73526F3201F8809" : ".."
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Johans_server",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
@@ -25,6 +27,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/lipecki\/Johan.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "50B2A47E28AD2820461731769EF59FF9C943E087"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:lipecki\/Test",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A00FD2700CB4EB2D17B501CEF73526F3201F8809"
     }
   ]
 }

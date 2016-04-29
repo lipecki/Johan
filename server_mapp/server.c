@@ -111,7 +111,7 @@ int main(int argc,char const *argv[])
                 if (!done){                                     //Inget fel eller avslut, enligt tilldelning
                     if(!(syn_ack(arguments,i,s2))){
                         //svara med portnummer och starta spelservern
-                        if(!(port=start_game_server((connections%4)))){
+                        if(!(port=start_game_server((connections%4)))){         //Skicka tillbaka porten till demonen och spara den i en lista med portar
                             syslog(LOG_ERR,"no port assigned to game server");
                             exit(EXIT_FAILURE);
                         }
