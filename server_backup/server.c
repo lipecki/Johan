@@ -36,121 +36,125 @@ void daemonize(const char *);
 
 int main(int argc,char const *argv[])
 {
-        int pid, s2, inet_fd, port=0, connections=0;
-        ssize_t r;
-        socklen_t t;
-        struct sockaddr_in inet, inet2;
-        char arguments[100],str[10000];
-        memset(arguments,'\0',sizeof(arguments));
-        memset(str,'\0',sizeof(str));
-
-        /* Initialize the logging interface */
-        openlog(DAEMON_NAME, LOG_PID, LOG_DAEMON );
-        syslog(LOG_INFO, "Starting_daemon" );
-
-        /* Daemonize */
-        daemonize( "/var/lock/" DAEMON_NAME);
-        syslog(LOG_INFO, "Daemonized!\n");
-
-        /* Now we are a daemon -- do the work for which we were paid */
-        // Example from Beej's Guide to Network Programming:
-        ////https://beej.us/guide/bgnet/output/html/multipage/sockaddr_inman.html
-
-        if ((inet_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
+    printf("Sitter du på Jungfrun, skriv 0: ");
+    if (!fgetc(stdin)) IP_ADDRESS = JUNGFRUNS_IP;
+    
+    int pid, s2, inet_fd, port=0, connections=0;
+    ssize_t r;
+    socklen_t t;
+    struct sockaddr_in inet, inet2;
+    char arguments[100],str[10000];
+    memset(arguments,'\0',sizeof(arguments));
+    memset(str,'\0',sizeof(str));
+    
+    /* Initialize the logging interface */
+    openlog(DAEMON_NAME, LOG_PID, LOG_DAEMON );
+    syslog(LOG_INFO, "Starting_daemon" );
+    
+    /* Daemonize */
+    daemonize( "/var/lock/" DAEMON_NAME);
+    syslog(LOG_INFO, "Daemonized!\n");
+    
+    /* Now we are a daemon -- do the work for which we were paid */
+    // Example from Beej's Guide to Network Programming:
+    ////https://beej.us/guide/bgnet/output/html/multipage/sockaddr_inman.html
+    
+    if ((inet_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
         syslog(LOG_ERR, "%s",strerror(errno));
         exit(1);
-        }
-
-        inet.sin_family = AF_INET;
-        inet.sin_port = htons(atoi(argv[1]));
-        inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
-
-        if (bind(inet_fd, (struct sockaddr *)&inet, sizeof inet) == -1) {
+    }
+    
+    inet.sin_family = AF_INET;
+    inet.sin_port = htons(atoi(argv[1]));
+    inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
+    
+    if (bind(inet_fd, (struct sockaddr *)&inet, sizeof inet) == -1) {
         syslog(LOG_ERR,  "%s",strerror(errno));
         exit(1);
-        } else syslog(LOG_INFO, "Socket bound!\n");
-
-        if (listen(inet_fd, 8) == -1) {             //8 connections will serve 2 games
+    } else syslog(LOG_INFO, "Socket bound!\n");
+    
+    if (listen(inet_fd, 8) == -1) {             //8 connections will serve 2 games
         syslog(LOG_ERR,  "%s",strerror(errno));
         exit(1);
+    }
+    syslog(LOG_INFO, "listening for up to 8 connections!\n");
+    
+    struct sigaction sa;
+    sa.sa_handler = sigchld_handlr; // reap all dead processes
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    for(;;) {
+        if (!(connections%4)) port=get_random_port_number();
+        if (sigaction(SIGCHLD, &sa, NULL) == -1) {      //WNOHANG!
+            syslog(LOG_ERR,  "%s",strerror(errno));
+            exit(EXIT_FAILURE);
         }
-        syslog(LOG_INFO, "listening for up to 8 connections!\n");
-
-        struct sigaction sa;
-        sa.sa_handler = sigchld_handlr; // reap all dead processes
-        sigemptyset(&sa.sa_mask);
-        sa.sa_flags = SA_RESTART;
-        for(;;) {
-                if (!(connections%4)) port=get_random_port_number();
-                if (sigaction(SIGCHLD, &sa, NULL) == -1) {      //WNOHANG!
-                    syslog(LOG_ERR,  "%s",strerror(errno));
-                    exit(EXIT_FAILURE);
-                }
-                syslog(LOG_INFO, "Waiting for a connection...\n");
-                t = sizeof(inet2);
-                if ((s2 = accept(inet_fd, (struct sockaddr *)&inet2, &t)) == -1) {
-                    syslog(LOG_ERR,  "%s",strerror(errno));
-                    exit(1);
-                }
-                /* fork efter acceptet! */
-                if((pid=fork())==-1){               // fork och felhantering
-                    syslog(LOG_ERR,  "%s",strerror(errno));
-                    exit(1);
-                }
-                else if(!pid){                              //serverbarnet ärver accepten, socketen och fildeskriptorn.
-                        syslog(LOG_INFO,"Connected.\n");
-                        int i=0, done = 0, ack =0;
-                        char arg2[3]={'\0'},ascii_port[6]={'\0'},sent_arguments[100]={'\0'};
-                        memset(ascii_port,'\0',(size_t) sizeof(ascii_port));
-                        memset(sent_arguments,'\0',(size_t) sizeof(sent_arguments));
-                        do {
-                                //Inget fel eller avslut, enligt tilldelning
-                                r = recv (s2,arguments,sizeof(arguments), 0);
-                                if (r <= 0) {
-                                        if (r < 0) perror("recv");
-                                        done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
-                                }
-                                else syslog(LOG_INFO, "received: %s", arguments);
-                                if(!done){
-                                        if(!(ack = syn_ack(arguments,i,s2))){               // !!! done kan hjälp eller stjälpa här !!
-                                                //svara med portnummer och starta spelservern
-                                                if(ack==2){
-                                                        if((start_game_server((connections%4),port)) < 0){
-                                                                syslog(LOG_ERR,"%s",strerror(errno));
-                                                                exit(EXIT_FAILURE);
-                                                        }
-                                                        //skicka portnummer till klienten!
-                                                        syslog(LOG_INFO,"port = %s",port);
-                                                        sprintf(ascii_port, "%d", port);
-                                                        strcpy(arguments,ascii_port);
-                                                        sprintf(arg2," %d",connections%4);
-                                                        strcat(arguments,arg2);
-                                                }
-                                                syslog(LOG_INFO, "Sending string: %s", arguments);
-                                                if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
-                                                        perror("send");
-                                                        done = 1;                   //försäkrar oss om att accept-loopen avslutas
-                                                }
-                                                syslog(LOG_INFO,"sent string: %s",strcpy(sent_arguments,arguments));
-                                                //strcpy(arguments, "ENDOFTRANS");
-                                        }
-                                        i++; //syn-ack räknare
-                                        // close(s2);
-                                }
-                        } while (!done);
-                        //close(s2);
-                        syslog(LOG_INFO, "I'm server %d and my client just signed off!\n",getpid());
-                        syslog(LOG_NOTICE, "terminated" );
-                        closelog();
-                        exit(0);
-                }
-                else close(s2);
-                wait(0);
-                connections++;
+        syslog(LOG_INFO, "Waiting for a connection...\n");
+        t = sizeof(inet2);
+        if ((s2 = accept(inet_fd, (struct sockaddr *)&inet2, &t)) == -1) {
+            syslog(LOG_ERR,  "%s",strerror(errno));
+            exit(1);
         }
-        /* Finish up */
-        closelog();
-        return 0;
+        /* fork efter acceptet! */
+        if((pid=fork())==-1){               // fork och felhantering
+            syslog(LOG_ERR,  "%s",strerror(errno));
+            exit(1);
+        }
+        else if(!pid){                              //serverbarnet ärver accepten, socketen och fildeskriptorn.
+            syslog(LOG_INFO,"Connected.\n");
+            int i=0, done = 0, ack =0;
+            char arg2[3]={'\0'},ascii_port[6]={'\0'},sent_arguments[100]={'\0'};
+            memset(ascii_port,'\0',(size_t) sizeof(ascii_port));
+            memset(sent_arguments,'\0',(size_t) sizeof(sent_arguments));
+            do {
+                //Inget fel eller avslut, enligt tilldelning
+                r = recv (s2,arguments,sizeof(arguments), 0);
+                if (r <= 0) {
+                    if (r < 0) perror("recv");
+                    done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
+                }
+                else syslog(LOG_INFO, "received: %s", arguments);
+                if(!done){
+                    if(!(ack = syn_ack(arguments,i,s2))){               // !!! done kan hjälp eller stjälpa här !!
+                        //svara med portnummer och starta spelservern
+                        if(ack==2){
+                            if((start_game_server((connections%4),port)) < 0){
+                                syslog(LOG_ERR,"%s",strerror(errno));
+                                exit(EXIT_FAILURE);
+                            }
+                            //skicka portnummer till klienten!
+                            syslog(LOG_INFO,"port = %s",port);
+                            sprintf(ascii_port, "%d", port);
+                            strcpy(arguments,ascii_port);
+                            sprintf(arg2," %d",connections%4);
+                            strcat(arguments,arg2);
+                        }
+                        syslog(LOG_INFO, "Sending string: %s", arguments);
+                        if (send(s2,arguments,strlen(arguments),0) < 0) {  //skicka tillbaka strängen
+                            perror("send");
+                            done = 1;                   //försäkrar oss om att accept-loopen avslutas
+                        }
+                        syslog(LOG_INFO,"sent string: %s",strcpy(sent_arguments,arguments));
+                        //strcpy(arguments, "ENDOFTRANS");
+                    }
+                    i++; //syn-ack räknare
+                    // close(s2);
+                }
+            } while (!done);
+            //close(s2);
+            syslog(LOG_INFO, "I'm server %d and my client just signed off!\n",getpid());
+            syslog(LOG_NOTICE, "terminated" );
+            closelog();
+            exit(0);
+        }
+        else close(s2);
+        wait(0);
+        connections++;
+    }
+    /* Finish up */
+    closelog();
+    return 0;
+    
 }
 
 void sigchld_handlr(int s)
