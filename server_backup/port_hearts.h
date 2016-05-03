@@ -17,8 +17,7 @@
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
-#define IP_ADDRESS "192.168.0.2"
-#define JUNGFRUNS_IP "130.237.84.89"
+#define IP_ADDRESS "130.237.84.89"
 
 #include <stdio.h>
 int start_game_server(int,int); //

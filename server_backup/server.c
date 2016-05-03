@@ -59,13 +59,11 @@ int main(int argc,char const *argv[])
     if ((inet_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
         syslog(LOG_ERR, "%s",strerror(errno));
         exit(1);
-    }
-    
+    }	
+    syslog(LOG_INFO, "Socket bound!");
     inet.sin_family = AF_INET;
     inet.sin_port = htons(atoi(argv[1]));
-    printf("Sitter du på Jungfrun, skriv 0: ");
-    if (!fgetc(stdin)) inet_pton(AF_INET,JUNGFRUNS_IP,&inet.sin_addr);
-    else inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
+    inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
     
     if (bind(inet_fd, (struct sockaddr *)&inet, sizeof inet) == -1) {
         syslog(LOG_ERR,  "%s",strerror(errno));
