@@ -37,7 +37,7 @@ void daemonize(const char *);
 int main(int argc,char const *argv[])
 {
     printf("Sitter du på Jungfrun, skriv 0: ");
-    if (!fgetc(stdin)) IP_ADDRESS = JUNGFRUNS_IP;
+    if (!fgetc(stdin)) strcpy(IP_ADDRESS,JUNGFRUNS_IP);
     
     int pid, s2, inet_fd, port=0, connections=0;
     ssize_t r;
