@@ -36,9 +36,6 @@ void daemonize(const char *);
 
 int main(int argc,char const *argv[])
 {
-    printf("Sitter du på Jungfrun, skriv 0: ");
-    if (!fgetc(stdin)) strcpy(IP_ADDRESS,JUNGFRUNS_IP);
-    
     int pid, s2, inet_fd, port=0, connections=0;
     ssize_t r;
     socklen_t t;
@@ -66,7 +63,9 @@ int main(int argc,char const *argv[])
     
     inet.sin_family = AF_INET;
     inet.sin_port = htons(atoi(argv[1]));
-    inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
+    printf("Sitter du på Jungfrun, skriv 0: ");
+    if (!fgetc(stdin)) inet_pton(AF_INET,JUNGFRUNS_IP,&inet.sin_addr);
+    else inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
     
     if (bind(inet_fd, (struct sockaddr *)&inet, sizeof inet) == -1) {
         syslog(LOG_ERR,  "%s",strerror(errno));
