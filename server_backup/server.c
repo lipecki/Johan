@@ -59,7 +59,7 @@ int main(int argc,char const *argv[])
     if ((inet_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
         syslog(LOG_ERR, "%s",strerror(errno));
         exit(1);
-    }	
+    }
     syslog(LOG_INFO, "Socket bound!");
     inet.sin_family = AF_INET;
     inet.sin_port = htons(atoi(argv[1]));
