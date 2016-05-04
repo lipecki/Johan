@@ -1,0 +1,44 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "50ACC42559183552D90312A737CFA239E0E13592",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "A00FD2700CB4EB2D17B501CEF73526F3201F8809" : 0,
+    "50B2A47E28AD2820461731769EF59FF9C943E087" : 0,
+    "CB0871B4F1F2997876860CF11EC3FCC2621BB4BD" : 0,
+    "50ACC42559183552D90312A737CFA239E0E13592" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "350F71FE-FBB4-4677-99D5-3BA183D051F8",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "A00FD2700CB4EB2D17B501CEF73526F3201F8809" : "..",
+    "50B2A47E28AD2820461731769EF59FF9C943E087" : "Johan\/",
+    "CB0871B4F1F2997876860CF11EC3FCC2621BB4BD" : "hearts\/",
+    "50ACC42559183552D90312A737CFA239E0E13592" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Ack",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "client\/Client\/Ack\/Ack.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gr7projekt\/hearts.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "50ACC42559183552D90312A737CFA239E0E13592"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/lipecki\/Johan.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "50B2A47E28AD2820461731769EF59FF9C943E087"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:lipecki\/Test",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A00FD2700CB4EB2D17B501CEF73526F3201F8809"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gr7projekt\/hearts.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CB0871B4F1F2997876860CF11EC3FCC2621BB4BD"
+    }
+  ]
+}
