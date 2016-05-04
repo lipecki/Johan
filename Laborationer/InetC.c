@@ -63,7 +63,7 @@ int main(int argc,char const *argv[])
         while((t=recv(s, str, 100, 0)) > 0) {
             	str[t] = '\0';
             	printf("retur: %s\n", (str));
-            	if(!(strcmp(str,"ENDOFTRANS"))) break;
+            	if(!(strcmp(str,""))) break;
         }
         if(t < 0){
             perror("recv");

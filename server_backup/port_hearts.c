@@ -55,7 +55,6 @@ int syn_ack(char* arguments,int syn,int fd){
     child_pid = fork ();
     if(child_pid != 0){
         /* This is the parent process. */
-        close(1);
         wait(0);
         return 1;
     }
