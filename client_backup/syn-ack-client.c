@@ -8,7 +8,6 @@
 
 #include "syn-ack-client.h"
 
-
 int main(void)
 {
     IPaddress ip;
