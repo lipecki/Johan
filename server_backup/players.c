@@ -34,7 +34,7 @@ void* player_waits_or_plays (void *arguments) {
     UDPsocket udPsocket;
 
     udPsocket=SDLNet_UDP_Open(ipv4.port);
-    if(!udpsock) {
+    if(!udPsocket) {
         printf("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
         exit(2);
     }
@@ -64,7 +64,7 @@ void* player_waits_or_plays (void *arguments) {
 
             }
             else {
-                if (!(SDLNet_UDP_Send(udpSocket, (&skicka_hand)->channel, &skicka_hand)))
+                if (!(SDLNet_UDP_Send(udPsocket, (&skicka_hand)->channel, &skicka_hand)))
                     syslog(LOG_ERR, "%s", SDLNET_GetError());
                 else {
                     sleep(1);
