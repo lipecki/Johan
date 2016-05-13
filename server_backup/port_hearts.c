@@ -23,7 +23,7 @@ int get_random_port_number(void){
     srandom((unsigned)time(NULL));
     return (random()%10000 + 40000);
 }
-int syn_ack(char* arguments, int *i,int sd, char *port, int connection_no){
+int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
     if(strcmp(arguments,"ENDOFTRANS")){
         syslog(LOG_INFO, "syn-ack argument %d: %s",*i, arguments);
         
@@ -31,7 +31,7 @@ int syn_ack(char* arguments, int *i,int sd, char *port, int connection_no){
         
         else if(!(strcmp(arguments, "port")) && (*i)){
             
-            sprintf(arguments, "%s %d", port, connection_no);
+            sprintf(arguments, "%d %d", port, connection_no);
         }
         else strcpy(arguments, "This incident will be reported!");
         

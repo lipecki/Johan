@@ -60,7 +60,7 @@ int start_game_server(int);
 // Checks string for SYN0 if second argument points to a 0 and checks for SYN1 if second argument doesn't point to a 0
 // Using the socket descriptor in the third argument, ACK0 is returned to the socket for SYN0
 // arguments 4 and 5 are returned to the socket for SYN1
-int syn_ack(char *,int*,int,char*,int);
+int syn_ack(char *,int*,int,int,int);
 // Returns a random number between 40 k and 50 k
 int get_random_port_number(void);
 // Sends the string "login" using provided socket descriptor pointer and send(2)
