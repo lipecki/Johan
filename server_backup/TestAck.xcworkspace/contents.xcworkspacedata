@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../../../../Library/Frameworks/SDL2_image.framework">
+   </FileRef>
+   <FileRef
+      location = "group:../../../../Library/Frameworks/SDL2_net.framework">
+   </FileRef>
+   <FileRef
+      location = "group:../../../../Library/Frameworks/SDL2.framework">
+   </FileRef>
+   <FileRef
+      location = "container:../../hearts/client/klientacksyn.c">
+   </FileRef>
+</Workspace>
