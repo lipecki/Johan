@@ -239,7 +239,7 @@ int main(int argc,char const *argv[])
         }
         // logga spel-pid och guid i spel-logg
         if(!connection_no) {
-            (gamelog, "%s%s", GAMELOG, strcpy(port, get_random_port_number()));
+            (gamelog, "%s%d", GAMELOG, port=get_random_port_number()));
             if ((log_fp = fopen(gamelog, "w")) == NULL) syslog(LOG_ERR,"%s", strerror(errno));
             else {
                 fprintf(log_fp, "%s", port);
