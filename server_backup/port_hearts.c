@@ -55,7 +55,7 @@ Account prompt_for_login(int *socketDescriptor) {
         syslog(LOG_ERR, "%s", strerror(errno));
         return account;
     }
-    strcpy(account_values,separate_strings(arguments, ";"));
+    account_values = separate_strings(arguments, ";");
     strcpy(account.username,account_values[0]);
     strcpy(account.password,account_values[1]);
     if ((account.username == getAccountByUsername(account.username).username) &&
