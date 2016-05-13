@@ -227,7 +227,8 @@ int main(int argc,char const *argv[])
         //signalhantering, kunde kanske vara utanför loopen men varför ändra ett vinnande koncept?
         int connection_no = (connections%4);
         FILE *log_fp;
-        char gamelog[40],port[7];
+        char gamelog[40],
+        int port;
 
         struct sigaction sa;
         sa.sa_handler = sigchld_handlr; // reap all dead processes
@@ -239,7 +240,7 @@ int main(int argc,char const *argv[])
         }
         // logga spel-pid och guid i spel-logg
         if(!connection_no) {
-            (gamelog, "%s%d", GAMELOG, port=get_random_port_number()));
+            (gamelog, "%s%d", GAMELOG, port=get_random_port_number());
             if ((log_fp = fopen(gamelog, "w")) == NULL) syslog(LOG_ERR,"%s", strerror(errno));
             else {
                 fprintf(log_fp, "%s", port);
