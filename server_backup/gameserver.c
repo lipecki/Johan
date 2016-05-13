@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 	if (init_net()) printf("Success on init\n");
 	pthread_t threads[4];
 	Args thread_arg[4];
-	__uint16_t port = htons((__uint16_t) argv[1]);
-	__uint32_t ipv4 = htonl("127.0.0.1");
+	__uint16_t port = htons((__uint16_t) atoi(argv[1]));
+	__uint32_t ipv4 = htonl(atoi("127.0.0.1"));
 	char *trick[4];
 	int i = 0;
 
