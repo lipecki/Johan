@@ -227,7 +227,7 @@ int main(int argc,char const *argv[])
         //signalhantering, kunde kanske vara utanför loopen men varför ändra ett vinnande koncept?
         int connection_no = (connections%4);
         FILE *log_fp;
-        char gamelog[40],
+        char gamelog[40];
         int port;
 
         struct sigaction sa;
@@ -243,7 +243,7 @@ int main(int argc,char const *argv[])
             (gamelog, "%s%d", GAMELOG, port=get_random_port_number());
             if ((log_fp = fopen(gamelog, "w")) == NULL) syslog(LOG_ERR,"%s", strerror(errno));
             else {
-                fprintf(log_fp, "%s", port);
+                fprintf(log_fp, "%d", port);
                 fclose(log_fp);
             }
             log_fp = fopen(gamelog, "a+");
