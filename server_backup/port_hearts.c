@@ -63,14 +63,14 @@ Account prompt_for_login(int *socketDescriptor) {
     return account;
 }
 
-char* separate_strings(char *inputstring, const char *separators) {
+char** separate_strings(char *inputstring, const char *separators) {
     //From strsep() manual:
     // The following uses strsep() to parse a string,
     // containing tokens delimited by *separators, into an argument vector:
-    char **array_pointers, *pointers_to_arrays[10];
+    char **array_pointers, *pointers_to_strings[10];
 
-    for (array_pointers = pointers_to_arrays; (*array_pointers = strsep(&inputstring, separators)) != NULL;)
-        if (**array_pointers != '\0') if (++array_pointers >= &pointers_to_arrays[10]) break;
+    for (array_pointers = pointers_to_strings; (*array_pointers = strsep(&inputstring, separators)) != NULL;)
+        if (**array_pointers != '\0') if (++array_pointers >= &pointers_to_strings[10]) break;
     return array_pointers;
 }
 
