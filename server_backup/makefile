@@ -18,7 +18,7 @@ gameserver.o: gameserver.c
 	# `sdl2-config --cflags` `mysql_config --cflags --libs` gameserver.c
 
 players.o: players.c
-	# `sdl2-config --cflags`
+    `sdl2-config --cflags`
 
 game.o: game.c
 
