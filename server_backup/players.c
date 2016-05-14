@@ -44,7 +44,7 @@ void* player_waits_or_plays (void *arguments) {
     UDPpacket skicka_hand = createPacket(chanL,&hand_data,sizeof(hand_data),100,0,&ipv4);
     UDPpacket mottaget_paket;
 
-    if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, ipv4)) < 0) {
+    if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &ipv4)) < 0) {
         syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
         // do something because we failed to bind
     }
