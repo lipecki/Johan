@@ -73,14 +73,14 @@ void* player_waits_or_plays (void *arguments) {
         }
     }
 }
-UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress adr){
+UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress *adr){
         UDPpacket pkt;
         pkt.channel = cnl;
         pkt.data = data;
         pkt.len = len;
         pkt.maxlen = maxlen;
         pkt.status = status;
-        pkt.address = adr;
+        pkt.address = *adr;
         return pkt;
 }
 /*
