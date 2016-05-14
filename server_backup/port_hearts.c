@@ -70,7 +70,7 @@ char* separate_strings(char *inputstring, const char *separators) {
     char **array_pointers, *pointers_to_arrays[10];
 
     for (array_pointers = pointers_to_arrays; (*array_pointers = strsep(&inputstring, separators)) != NULL;)
-        if (**array_pointers != '\0') if (++array_pointers >= &list[10]) break;
+        if (**array_pointers != '\0') if (++array_pointers >= &pointers_to_arrays[10]) break;
     return array_pointers;
 }
 
