@@ -55,7 +55,7 @@ Account prompt_for_login(int *socketDescriptor) {
         syslog(LOG_ERR, "%s", strerror(errno));
         return account;
     }
-    account_values = separate_strings(arguments, ";");
+    separate_strings(arguments, ";",account_values, 10);
     strcpy(account.username,account_values[0]);
     strcpy(account.password,account_values[1]);
     if ((account.username == getAccountByUsername(account.username).username) &&
@@ -63,14 +63,13 @@ Account prompt_for_login(int *socketDescriptor) {
     return account;
 }
 
-char** separate_strings(char *inputstring, const char *separators) {
+void separate_strings(char *inputstring, const char *separators, char *fill_this_array_of_pointers[],int length_of_array_to_fill) {
     //From strsep() manual:
     // The following uses strsep() to parse a string,
     // containing tokens delimited by *separators, into an argument vector:
-    char **array_pointers, *pointers_to_strings[10];
+    char **array_pointers;
 
-    for (array_pointers = pointers_to_strings; (*array_pointers = strsep(&inputstring, separators)) != NULL;)
-        if (**array_pointers != '\0') if (++array_pointers >= &pointers_to_strings[10]) break;
-    return pointers_to_strings;
+    for (array_pointers = fill_this_array_of_pointers; (*array_pointers = strsep(&inputstring, separators)) != NULL;)
+        if (**array_pointers != '\0') if (++array_pointers >= &fill_this_array_of_pointers[length_of_array_to_fill]) break;
 }
 
