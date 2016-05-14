@@ -23,7 +23,7 @@ players.o: players.c
 game.o: game.c
 
 gameserver: gameserver.o encrypt.o account.o players.o game.o
-    $(CC) $(LDFLAGS) -o $@ $^ $(LIBS)                           # `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -lpthread
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)                           # `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -lpthread
 
 port_hearts.o: port_hearts.c
 	 #`mysql_config --cflags --libs`
@@ -32,5 +32,5 @@ InetS3.o: InetS3.c
 	    # `mysql_config --cflags --libs` -lmysqlclient
 
 InetS3: InetS3.o account.o encrypt.o
-    $(CC) $(LDFLAGS) -o $@ $^ $(LIBS)  # -lmysqlclient
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)  # -lmysqlclient
 
