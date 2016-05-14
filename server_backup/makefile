@@ -1,34 +1,36 @@
-all: clean account.o gameserver.o encrypt.o InetS3.o port_hearts.o players.o game.o gameserver InetS3 
-
+all: gameserver InetS3
 clean:
-	rm -f *.o
-	rm -f gameserver
-	rm -f inets3
+	rm -f *.o gameserver InetS3
+.PHONY: all clean
 
-account.o: 
-	gcc -c -std=c99 -std=c99 `mysql_config --cflags --libs` -lmysql account.c
+# -c is implicit, you don't need it (it *shouldn't* be there)
+# CC is also implicit, you don't need it
 
-encrypt.o:
-	gcc -c -std=c99 -lmcrypt encrypt.c
+CFLAGS := -std=c99 -g -Wall -Wextra
 
-gameserver.o:
-	gcc -c -std=c99 `sdl2-config --cflags` `mysql_config --cflags --libs` gameserver.c
+account.o: account.c
+	# `mysql_config --cflags --libs` -lmysql
 
-players.o:
-	gcc -c -std=c99 `sdl2-config --cflags` players.c
+encrypt.o: encrypt.c
+	# -lmcrypt
 
-game.o:
-	gcc -c -std=c99 game.c
+gameserver.o: gameserver.c
+	# `sdl2-config --cflags` `mysql_config --cflags --libs` gameserver.c
 
-gameserver:
-	gcc -o gameserver gameserver.o encrypt.o account.o players.o game.o `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -lpthread
+players.o: players.c
+	`sdl2-config --cflags`
 
-port_hearts.o:
-	gcc -c -std=c99 `mysql_config --cflags --libs` port_hearts.c
+game.o: game.c
 
-InetS3.o:
-	gcc -c -std=c99 InetS3.c `mysql_config --cflags --libs` -lmysqlclient
+gameserver: gameserver.o encrypt.o account.o players.o game.o
+    $(CC) $(LDFLAGS) -o $@ $^ $(LIBS)                           # `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -lpthread
 
-InetS3:
-	gcc -o InetS3 InetS3.o account.o encrypt.o -lmysqlclient
+port_hearts.o: port_hearts.c
+	 #`mysql_config --cflags --libs`
+
+InetS3.o: InetS3.c
+	 # `mysql_config --cflags --libs` -lmysqlclient
+
+InetS3: InetS3.o account.o encrypt.o
+    $(CC) $(LDFLAGS) -o $@ $^ $(LIBS)  # -lmysqlclient
 
