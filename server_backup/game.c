@@ -20,11 +20,11 @@ void update_round_score(int *round_score[],char *card[]){
 
 int check_winner(char *card[],int player_pos_of_starting_hand) {
     char hand_suit = card[player_pos_of_starting_hand][0];
-    char high_card[] = {NULL, NULL,'\0'};
-    char tmp_card[3];
+    char high_card[3] = {'\0'};
+    char tmp_card[3] = {'\0'};
     int winner_pos=player_pos_of_starting_hand;
     for (int i = 0;i < 4;i++) {
-        strcpy(tmp_card,*card[i]);
+        strcpy(tmp_card,card[i]);
         if (card[i][0] == hand_suit) if (card[i][1] > high_card[1]) {
             strcpy(high_card,tmp_card);
             winner_pos = i;
