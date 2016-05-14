@@ -16,7 +16,7 @@ void* player_waits_or_plays (void *arguments) {
     Player me;
     me.pos = args->pos;
     IPaddress ipv4;
-    ipv4 = args->address;
+    ipv4 = (*args).address;
     // Bind address to the first free channel
     // UDPsocket udpsock;
     // IPaddress *address;
