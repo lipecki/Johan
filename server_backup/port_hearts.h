@@ -68,5 +68,4 @@ int get_random_port_number(void);
 // Login failure returns account username NULL
 Account prompt_for_login(int*);
 int getGuid(char[]);
-void separate_strings(char*,const char*,char* [],int);
 #endif /* port_hearts_h */
