@@ -5,7 +5,7 @@
 
 
 #include "game.h"
-
+void separate_strings(char *, const char *, char *[],int);
 int calculate_trick(char* card[]){
     int score = 0;
     for(int i=0;i<4;i++){
