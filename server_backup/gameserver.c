@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	pthread_t threads[4];
 	Args thread_arg[4];
 	__uint16_t port = htons((__uint16_t) atoi(argv[1]));
-	__uint32_t ipv4 = htonl(atoi("127.0.0.1"));
+	__uint32_t ipv4 = htonl((__uint32_t) atoi("127.0.0.1"));
 	char *trick[4];
 	int i = 0;
 
