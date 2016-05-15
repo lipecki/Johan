@@ -46,7 +46,10 @@ bool is_two_of_clubs(char card[]){
 }
 void search_hand(char* hand[], int *next_player, int my_pos){
     for(int i = 0;i < 13;i++){
-        if (is_two_of_clubs(hand[i])) *next_player = my_pos;
+        if (is_two_of_clubs(hand[i])){
+		*next_player = my_pos;
+    		return;
+	}
     }
 }
 bool is_hundred(int score[]){
@@ -59,7 +62,7 @@ void separate_strings(char *inputstring, const char *separators, char *fill_this
     // containing tokens delimited by *separators, into an argument vector:
     char **array_pointers;
     char* string;
-    string = strdup(inputstring);
+    string = (char*) strdup(inputstring);
 
     for (array_pointers = fill_this_array_of_pointers; (*array_pointers = strsep(&string, separators)) != NULL;)
         if (**array_pointers != '\0') if (++array_pointers >= &fill_this_array_of_pointers[size_of_array_to_fill]) break;

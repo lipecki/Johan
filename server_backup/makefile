@@ -18,7 +18,7 @@ gameserver.o: gameserver.c
 	# `sdl2-config --cflags` `mysql_config --cflags --libs` gameserver.c
 
 players.o: players.c
-    `sdl2-config --cflags`
+	# `sdl2-config --cflags`
 
 game.o: game.c
 
@@ -31,6 +31,6 @@ port_hearts.o: port_hearts.c
 InetS3.o: InetS3.c
 	    # `mysql_config --cflags --libs` -lmysqlclient
 
-InetS3: InetS3.o account.o encrypt.o
+InetS3: InetS3.o account.o encrypt.o port_hearts.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)  # -lmysqlclient
 
