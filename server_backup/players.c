@@ -50,9 +50,9 @@ void* player_waits_or_plays (void *arguments) {
     }
     else {
         while (1) {
-            if (my_turn()) {
+            if (/*my_turn()*/1) {
                 if (!(SDLNet_UDP_Send(udPsocket, (&spela)->channel, &spela)))
-                    syslog(LOG_ERR, "%s", SDLNET_GetError());
+                    syslog(LOG_ERR, "%s", SDLNet_GetError());
                 else {
                     sleep(15);
                 }
@@ -65,7 +65,7 @@ void* player_waits_or_plays (void *arguments) {
             }
             else {
                 if (!(SDLNet_UDP_Send(udPsocket, (&skicka_hand)->channel, &skicka_hand)))
-                    syslog(LOG_ERR, "%s", SDLNET_GetError());
+                    syslog(LOG_ERR, "%s", SDLNet_GetError());
                 else {
                     sleep(1);
                 }
