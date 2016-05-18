@@ -264,6 +264,7 @@ int main(int argc,char const *argv[])
             int i = 0,j=0, done = 0;
             ssize_t r;
             do {
+                syslog(LOG_INFO,"About to receive!");
                 r = recv(s2, arguments,100, 0);
                 if (0 >= r) {
                     if (r < 0) perror("recv");
