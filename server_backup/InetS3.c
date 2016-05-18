@@ -1,7 +1,4 @@
-/*
-** Syn-Ack-Server för projektkursen Programvaruteknik, KTH Vt -16
-** Johan Lipecki, 2016-05-04
-*/
+/* ** Syn-Ack-Server för projektkursen Programvaruteknik, KTH Vt -16 ** Johan Lipecki, 2016-05-04 */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -268,18 +265,16 @@ int main(int argc,char const *argv[])
                 r = recv(s2, arguments,100, 0);
                 if (0 >= r) {
                     if (r < 0) perror("recv");
-                    done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
+			done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
                 }                                               //om recv returnerar 0 eller -1
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wfor-loop-analysis"
+		syslog(LOG_INFO, "Received \"%s\"", arguments);
                 while(i) {
                     // You get three tries to login
                     syslog(LOG_INFO,"login-loop entered");
-                    Account acc,account;
-                    strcpy(acc.username, NULL);
+                    Account acc, account;
+                    //strcpy(acc.username, "");
                     account=prompt_for_login(&s2);
-                    if(account.username == acc.username){
+                    if(!strcmp(account.username, acc.username)){
                         j += 1;
                         if (j==3){ 
                             strcpy(arguments,"login failed");
@@ -303,22 +298,20 @@ int main(int argc,char const *argv[])
                         }
                     }break;
                 }
-#pragma clang diagnostic pop
-                
                 if (!done){                                     //Inget fel eller avslut, enligt tilldelning
                     syslog(LOG_INFO, "!done\n");
                     if(!(syn_ack(arguments,&i,s2,port,connection_no))){
-                        //strcpy(arguments,"ENDOFTRANS");
+                        strcpy(arguments,"ENDOFTRANS");
                         if (send(s2,arguments,100,0) < 0) {  //meddela att meddelandet är klart
                             syslog(LOG_INFO,"send-fel");
                             syslog(LOG_ERR,"%s",strerror(errno));
                             done = 1;                               // försäkrar oss om att accept-loopen avslutas
-                            //memset(arguments,'\0',sizeof(arguments));
+                            memset(arguments,'\0',sizeof(arguments));
                             strcpy(arguments,"login");
                         }
                         else done = 0;
                         syslog(LOG_INFO,"Sent ENDOFTRANS");
-                        //memset(arguments,'\0',sizeof(arguments));
+                        memset(arguments,'\0',sizeof(arguments));
                     }
                 }
                 i += 1;
@@ -340,6 +333,3 @@ int main(int argc,char const *argv[])
     closelog();
     return 0;
 }
-
-
-

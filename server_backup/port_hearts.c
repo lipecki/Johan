@@ -24,10 +24,11 @@ int get_random_port_number(void){
     return (random()%10000 + 40000);
 }
 int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
-    if(strcmp(arguments,"ENDOFTRANS")){
-        syslog(LOG_INFO, "syn-ack argument %d: %s",*i, arguments);
+        if(strcmp(arguments,"ENDOFTRANS")){
+	
+	syslog(LOG_INFO, "syn-ack argument %d: %s",*i, arguments);
         
-        if (!strcmp(arguments, "hearts") && !(*i)) strcpy(arguments,"diamonds");
+	if (!strcmp(arguments, "hearts") && !(*i)) strcpy(arguments,"diamonds");
         
         else if(!(strcmp(arguments, "port")) && (*i)){
             
@@ -48,23 +49,26 @@ int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
     return 0;
 }
 Account prompt_for_login(int *socketDescriptor) {
-    static Account account;
-    char arguments[100];
-    char *account_values[10];
-    strcpy(account.username, NULL);
-    if (0 > send(*socketDescriptor, "account", sizeof("account")+1, 0)) {
-        syslog(LOG_ERR, "%s", strerror(errno));
-        return account;
-    }
-    if (0 > recv(*socketDescriptor, arguments, 101, 0)) {
-        syslog(LOG_ERR, "%s", strerror(errno));
-        return account;
-    }
-    separate_strings(arguments, ";",account_values, 10);
-    strcpy(account.username,account_values[0]);
-    strcpy(account.password,account_values[1]);
-    if ((account.username == getAccountByUsername(account.username).username) &&
-            (account.password == getAccountByUsername(account.username).password)) account = getAccountByUsername(account_values[0]);
-    return account;
+    	freopen("var/tmp/hearts_login_log.pid","w",stdout);
+	syslog(LOG_INFO, "Prompting for login");
+    	Account account;
+    	char arguments[100];
+    	char *account_values[10];
+    	account.username = malloc(100);
+    	strcpy(account.username, "");
+    	if (0 > send(*socketDescriptor, "account", 8, 0)) {
+        	syslog(LOG_ERR, "%s", strerror(errno));
+        	return account;
+    	}
+    	if (0 > recv(*socketDescriptor, arguments, 101, 0)) {
+        	syslog(LOG_ERR, "%s", strerror(errno));
+        	return account;
+    	}
+    	separate_strings(arguments, ";",account_values, 10);
+    	fprintf(stdout,"Given username: %s, strcpy(account.username,account_values[0]));
+    	strcpy(account.password,account_values[1]);
+	// jag har tagit bort det som stog här och returnerar bara ett konto
+	// krypteringen saknas, så förmodligen funkar inte detta!
+    	return getAccountByUsername(account_values[0]);
 }
 
