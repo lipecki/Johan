@@ -240,7 +240,7 @@ int main(int argc,char const *argv[])
         }
         // logga spel-pid och guid i spel-logg
         if(!connection_no) {
-            (gamelog, "%s%d", GAMELOG, port=get_random_port_number());
+            (gamelog, "%s_%d", GAMELOG, port=get_random_port_number());
             if ((log_fp = fopen(gamelog, "w")) == NULL) syslog(LOG_ERR,"%s", strerror(errno));
             else {
                 fprintf(log_fp, "%d", port);
@@ -248,7 +248,7 @@ int main(int argc,char const *argv[])
             }
             log_fp = fopen(gamelog, "a+");
         }
-        //syslog(LOG_INFO, "Waiting for a connection...\n");
+        syslog(LOG_INFO, "Waiting for a connection...\n");
         t = sizeof(inet2);
         if ((s2 = accept(inet_fd, (struct sockaddr *)&inet2, &t)) == -1) {
           syslog(LOG_ERR, strerror(errno));
@@ -309,7 +309,7 @@ int main(int argc,char const *argv[])
                         strcpy(arguments,"ENDOFTRANS");
                         if (send(s2,arguments,30,0) < 0) {  //meddela att meddelandet är klart
                             syslog(LOG_ERR,"%s",strerror(errno));
-                            done = 1;                               // försäkrar oss om att accept-loopen avslutas
+                        //    done = 1;                               // försäkrar oss om att accept-loopen avslutas
                         }
                         else done = 0;
                         memset(arguments,'\0',sizeof(arguments));
