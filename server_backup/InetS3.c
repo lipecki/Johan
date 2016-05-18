@@ -316,6 +316,7 @@ int main(int argc,char const *argv[])
                             strcpy(arguments,"login");
                         }
                         else done = 0;
+                        syslog(LOG_INFO,"Sent ENDOFTRANS");
                         //memset(arguments,'\0',sizeof(arguments));
                     }
                 }
