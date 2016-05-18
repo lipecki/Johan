@@ -260,7 +260,7 @@ int main(int argc,char const *argv[])
             exit(1);
         }
         else if(!pid){                                          //serverbarnet ärver accepten, socketen och fildeskriptorn.
-            //printf("Connected.\n");
+            syslog(LOG_INFO,"Connected.\n");
             int i = 0,j=0, done = 0;
             ssize_t r;
             do {
@@ -273,6 +273,7 @@ int main(int argc,char const *argv[])
 #pragma clang diagnostic ignored "-Wfor-loop-analysis"
                 while(i) {
                     // You get three tries to login
+                    syslog(LOG_INFO,"login-loop entered");
                     Account acc,account;
                     strcpy(acc.username, NULL);
                     account=prompt_for_login(&s2);
