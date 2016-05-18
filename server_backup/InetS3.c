@@ -312,11 +312,11 @@ int main(int argc,char const *argv[])
                         if (send(s2,arguments,100,0) < 0) {  //meddela att meddelandet är klart
                             syslog(LOG_ERR,"%s",strerror(errno));
                             done = 1;                               // försäkrar oss om att accept-loopen avslutas
-                            memset(arguments,'\0',sizeof(arguments));
+                            //memset(arguments,'\0',sizeof(arguments));
                             strcpy(arguments,"login");
                         }
                         else done = 0;
-                        memset(arguments,'\0',sizeof(arguments));
+                        //memset(arguments,'\0',sizeof(arguments));
                     }
                 }
                 i += 1;
