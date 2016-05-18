@@ -65,7 +65,7 @@ Account prompt_for_login(int *socketDescriptor) {
         	return account;
     	}
     	separate_strings(arguments, ";",account_values, 10);
-    	fprintf(stdout,"Given username: %s, strcpy(account.username,account_values[0]));
+    	fprintf(stdout,"Given username: %s", strcpy(account.username,account_values[0]));
     	strcpy(account.password,account_values[1]);
 	// jag har tagit bort det som stog här och returnerar bara ett konto
 	// krypteringen saknas, så förmodligen funkar inte detta!
