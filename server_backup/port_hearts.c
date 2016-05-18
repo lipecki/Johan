@@ -49,7 +49,7 @@ int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
     return 0;
 }
 Account prompt_for_login(int *socketDescriptor) {
-    	freopen("var/tmp/hearts_login_log.pid","w",stdout);
+    	freopen("/var/tmp/hearts_login_log.pid","w",stdout);
 	syslog(LOG_INFO, "Prompting for login");
     	Account account;
     	char arguments[100];
