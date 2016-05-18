@@ -268,7 +268,7 @@ int main(int argc,char const *argv[])
                 if (0 >= r) {
                     if (r < 0) perror("recv");
                     done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
-                } while (!r);                                               //om recv returnerar 0 eller -1
+                }                                               //om recv returnerar 0 eller -1
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wfor-loop-analysis"
                 while(i) {
@@ -309,7 +309,9 @@ int main(int argc,char const *argv[])
                         strcpy(arguments,"ENDOFTRANS");
                         if (send(s2,arguments,30,0) < 0) {  //meddela att meddelandet är klart
                             syslog(LOG_ERR,"%s",strerror(errno));
-                        //    done = 1;                               // försäkrar oss om att accept-loopen avslutas
+                            done = 1;                               // försäkrar oss om att accept-loopen avslutas
+                            memset(arguments,'\0',sizeof(arguments));
+                            strcpy(arguments,"login");
                         }
                         else done = 0;
                         memset(arguments,'\0',sizeof(arguments));
