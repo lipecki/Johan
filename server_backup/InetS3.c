@@ -308,7 +308,7 @@ int main(int argc,char const *argv[])
                 if (!done){                                     //Inget fel eller avslut, enligt tilldelning
                     syslog(LOG_INFO, "!done\n");
                     if(!(syn_ack(arguments,&i,s2,port,connection_no))){
-                        strcpy(arguments,"ENDOFTRANS");
+                        //strcpy(arguments,"ENDOFTRANS");
                         if (send(s2,arguments,100,0) < 0) {  //meddela att meddelandet är klart
                             syslog(LOG_INFO,"send-fel");
                             syslog(LOG_ERR,"%s",strerror(errno));
