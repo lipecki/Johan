@@ -269,7 +269,7 @@ int main(int argc,char const *argv[])
                     if (r < 0) perror("recv");
                     done = 1;                                   //försäkrar oss om att accept-loopen avslutas nedan ...
                 }                                               //om recv returnerar 0 eller -1
-                
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wfor-loop-analysis"
                 while(i) {
