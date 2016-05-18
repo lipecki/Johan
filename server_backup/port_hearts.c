@@ -41,7 +41,10 @@ int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
         }
         syslog(LOG_INFO,"Exiting syn-ack()");
     }
-    else return 1;
+    else{
+        syslog(LOG_ERR,"ENDOFTRANS");
+        return 1;
+    }
     return 0;
 }
 Account prompt_for_login(int *socketDescriptor) {
