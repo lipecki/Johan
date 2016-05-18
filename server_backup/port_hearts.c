@@ -39,6 +39,7 @@ int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
         if (send(sd,arguments,100,0) < 0) {
             syslog(LOG_ERR, "syn-ack send error: %s", strerror(errno));
         }
+        syslog(LOG_INFO,"Exiting syn-ack()");
     }
     return 0;
 }
