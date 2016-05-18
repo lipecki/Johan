@@ -37,10 +37,10 @@ int syn_ack(char* arguments, int *i,int sd, int port, int connection_no){
         
         //skicka tillbaka strängen
         if (send(sd,arguments,100,0) < 0) {
-            syslog(LOG_ERR, "%s", strerror(errno));
+            syslog(LOG_ERR, "syn-ack send error: %s", strerror(errno));
         }
-    return 0;
     }
+    return 0;
 }
 Account prompt_for_login(int *socketDescriptor) {
     static Account account;
