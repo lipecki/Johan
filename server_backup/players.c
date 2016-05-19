@@ -15,8 +15,6 @@ void* player_waits_or_plays (void *arguments) {
     Args *args = (Args*) arguments;
     Player me;
     me.pos = args->pos;
-    IPaddress ipv4;
-    ipv4 = args->address;
     // Bind address to the first free channel
     // UDPsocket udpsock;
     // IPaddress *address;
@@ -24,7 +22,7 @@ void* player_waits_or_plays (void *arguments) {
     uint8_t speila = 1;
     uint8_t hand_data;
     char *str;
-    sprintf(str,"%x;%x;%x;%x;",*args->trick[0],*args->trick[1],*args->trick[2],
+    sprintf(str,"%s;%s;%s;%s;",*args->trick[0],*args->trick[1],*args->trick[2],
             *args->trick[3]);
     hand_data = atoi(str);
 
