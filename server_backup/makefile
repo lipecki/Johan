@@ -39,6 +39,6 @@ serve_client.o:
 	$(CC) -c  $(SDL_FLAGS) `mysql_config --cflags --libs` -lmysqlclient -lSDL2_net serve_client.c
 
 serve_client:
-	$(CC) -o serve_client.o
+	$(CC) -o serve_client serve_client.o
 
 

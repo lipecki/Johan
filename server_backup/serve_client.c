@@ -62,17 +62,3 @@ int main(void) {
     	close(s);
     	return 0;
 }
-int init_net();
-
-
-
-
-int init_net()
-{
-        if (SDLNet_Init() < 0) {
-                printf("SDLNet_Init: %s", SDLNet_GetError());
-                return 0;
-        }
-        else return 1;
-
-}
