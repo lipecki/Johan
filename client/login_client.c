@@ -17,11 +17,12 @@
 #define USER_DATA "Grupp7;password"
 #define SERVER_REPLY "41337;1"
 
+void login(char [],char []);
 int main(void)
 {
     IPaddress ip;
     TCPsocket sd;
-    char server[25] = "", newport[MAXLEN], SYN0[MAXLEN] = "hearts", SYN1[MAXLEN] = "port", log_string[40], pid[7];
+    char server_ip[25] = "", newport[MAXLEN], SYN0[MAXLEN] = "hearts", SYN1[MAXLEN] = "port", log_string[40], pid[7];
 
     int result, len, len2;
     uint16_t port;
@@ -35,10 +36,10 @@ int main(void)
     fclose(fd);
     fd = fopen(log_string,"a+");
 
-    strcpy(server, IP_ADDRESS);
+    strcpy(server_ip, IP_ADDRESS);
     port = PORT;
     
-    if (SDLNet_ResolveHost(&ip, server, port) < 0)
+    if (SDLNet_ResolveHost(&ip, server_ip, port) < 0)
     {
         fprintf(fd, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         exit(EXIT_FAILURE);
@@ -94,23 +95,15 @@ int main(void)
         char *tmp;
         char *array_of_pointers[4];
 
-/*        while(!strcmp(SYN1, "account")) {
-            printf("Ange användarnamn: \n");
-            fgets(user_name, sizeof(user_name)+1,stdin);
-            //strcpy(user_name,strsep(&user_name," "));
-            user_name[strlen(user_name)-1]=';';
-            printf("Ange lösenord: \n");
-            fgets(password, sizeof(password)+1,stdin);
-            //strcpy(password,strsep(&password," "));
-            password[strlen(password)-1]='\0';
-            strcat(user_name,password);
+        while(!strcmp(SYN1, "account")) {
+            login(user_name,password);
             len2 = (int) sizeof(user_name+1);
             if (SDLNet_TCP_Send(sd, user_name, len2) < len2) printf("%s*",strerror(errno));
             printf("Sent: %s\n", user_name);
             sleep(1);
             printf("%d-\n",SDLNet_TCP_Recv(sd,SYN1,MAXLEN));
         }
-*/
+
         //sammanfoga strängen som startar spelklienten
         strcpy(newport, "./");
         strcat(newport, GAME_CLIENT);
@@ -128,5 +121,14 @@ int main(void)
     else fprintf(fd, "Returned error string: %s\n", SYN0);
     fclose(fd);
     return -1;
+}
+void login(char user_name[],char password[]){
+    printf("Ange användarnamn: \n");
+    fgets(user_name, sizeof(user_name)+1,stdin);
+    user_name[strlen(user_name)-1]=';';
+    printf("Ange lösenord: \n");
+    fgets(password, sizeof(password)+1,stdin);
+    password[strlen(password)-1]='\0';
+    strcat(user_name,password);
 }
 
