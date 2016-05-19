@@ -18,7 +18,7 @@
 #include <syslog.h>
 #include <errno.h>
 #include "card.h"
-#include <SDL2/SDL_net.h>
+#include "SDL2/SDL_net.h"
 #include <SDL2/SDL.h>
 
 
