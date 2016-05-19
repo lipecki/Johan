@@ -12,8 +12,7 @@
 #include <pthread.h>
 #include <SDL_net.h>
 #include <SDL.h>
-#include "players.h"
-#include "port_hearts.h"
+
 
 #define BUFLEN 512
 #define NPACK 4
