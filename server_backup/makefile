@@ -6,6 +6,7 @@ clean:
 	rm -f InetS3
 
 CC := gcc -std=c99 -g -w
+SDL_FLAGS := `sdl2-config --cflags`
 
 account.o: 
 	gcc -c `mysql_config --cflags --libs` -lmysql account.c
@@ -33,4 +34,11 @@ InetS3.o:
 
 InetS3:
 	$(CC) -o InetS3 port_hearts.o InetS3.o account.o encrypt.o game.o -lmysqlclient -lmcrypt
+
+serve_client.o:
+        $(CC) $(SDL_FLAGS) serve_client.c
+
+serve_client:
+        gcc -o serve_client.o port_hearts.o players.o -lmysqlclient
+
 
