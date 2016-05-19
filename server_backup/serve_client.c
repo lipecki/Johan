@@ -65,47 +65,7 @@ int main(void) {
 }
 int init_net();
 
-void test(int argc,char *argv[])
-{
-	// receives hearts_start, "%s %s %s %s %s %s", GAME_SERVER, port, ipv4 array
-	Trick *trick1;
-	IPaddress iPaddress;
 
-	if (init_net()) printf("Success on init\n");
-	__uint16_t port = htons((__uint16_t) argv[1]);
-	__uint32_t ipv4 = htonl((__uint32_t)IP_ADDRESS);
-
-	iPaddress.host = ipv4;
-	iPaddress.port = port;
-	trick1->address = iPaddress;
-
-	char *trick[] = {"02","00","2A","1C"};
-	for(int i=0;i<4;i++) strcpy(trick1->trick[i],trick[i]);
-	// Bind address to the first free channel
-	// UDPsocket udpsock;
-	// IPaddress *address;
-	int chanL=0, mottagna_paket=0;
-	char str[40] = {'\0'};
-	sprintf(str,"%s;%s;%s;%s;",trick1->trick[0],trick1->trick[1],trick1->trick[2],trick1->trick[3]);
-
-	// create a UDPsocket on port
-	UDPsocket udPsocket;
-
-	if(!(udPsocket=SDLNet_UDP_Open(iPaddress.port))){
-		printf("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
-		exit(2);
-	}
-	uint8_t *string=0;
-	strcpy(string,str);
-	UDPpacket skicka_hand = createPacket(chanL,string,sizeof(str),100,0,iPaddress);
-	UDPpacket mottaget_paket;
-
-	if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &iPaddress)) < 0) {
-		syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
-		// do something because we failed to bind
-	}
-
-}
 
 
 int init_net()
