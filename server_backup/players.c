@@ -31,18 +31,18 @@ void* player_waits_or_plays (void *arguments) {
     // create a UDPsocket on port 6666 (server)
     UDPsocket udPsocket;
 
-    udPsocket=SDLNet_UDP_Open(ipv4.port);
+    udPsocket=SDLNet_UDP_Open(args->address.port);
     if(!udPsocket) {
         printf("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
         exit(2);
     }
 
 
-    UDPpacket spela = createPacket(chanL, &speila, 1, 100, 0, ipv4);
-    UDPpacket skicka_hand = createPacket(chanL,&hand_data,sizeof(hand_data),100,0,ipv4);
+    UDPpacket spela = createPacket(chanL, &speila, 1, 100, 0, &args->address);
+    UDPpacket skicka_hand = createPacket(chanL,&hand_data,sizeof(hand_data),100,0,&args->address);
     UDPpacket mottaget_paket;
 
-    if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &ipv4)) < 0) {
+    if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &args->address) < 0)) {
         syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
         // do something because we failed to bind
     }
