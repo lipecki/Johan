@@ -26,6 +26,9 @@ typedef struct {
     int pos;
     IPaddress address;
     char *trick[4];
+    int channel;
+    UDPsocket udPsocket;
+    UDPpacket *udPpacket;
 
 }Args;
 typedef struct {
@@ -44,6 +47,7 @@ typedef struct player_parms{
     int score;
     Card game_hand[13];
     Card won_hand[52];
+    Args *udpArguments;
 }Player;
 
 #endif /* players_h */

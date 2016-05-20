@@ -10,19 +10,23 @@
 
 
 void* player_waits_or_plays (void *arguments) {
+        Player *args = (Player *) arguments;
         while (1) {
                 int my_turn = 1;
                 if (my_turn) {
-                        if (!(SDLNet_UDP_Send(udPsocket, (&spela)->channel, &spela))) {
+                        if (!(SDLNet_UDP_Send(args->udpArguments->udPsocket,
+                                              args->udpArguments->channel,
+                                              &(args->udpArguments->address)))){
                                 syslog(LOG_ERR, "%s", strerror(errno));
                                 my_turn = 0;
                         }
                         else {
                                 // try to receive a waiting udp packet
                                 // UDPsocket udpsock;
-                                UDPpacket packet;
+                                UDPpacket *packet=args->udpArguments->udPpacket;
+                                UDPsocket udPsocket=args->udpArguments->udPsocket;
                                 int numrecv;
-                                numrecv = SDLNet_UDP_Recv(udpsock, &packet);
+                                numrecv = SDLNet_UDP_Recv(udPsocket, packet);
                                 if (numrecv) {
                                         // do something with packet
                                 }
@@ -31,19 +35,11 @@ void* player_waits_or_plays (void *arguments) {
                 else {
                         sleep(15);
                 }
-                mottagna_paket = SDLNet_UDP_Recv(udPsocket, &mottaget_paket);
-                if (mottagna_paket) {
-                        //klientens angivna position uppdaterar handen med kortet som skickats
-                        sprintf(args->trick[mottaget_paket.data[0]], "%x%x", mottaget_paket.data[1],
-                                mottaget_paket.data[2]);
-                }
-        }
-        if (!(SDLNet_UDP_Send(udPsocket, (&skicka_hand)->channel, &skicka_hand))) {
-                syslog(LOG_ERR, "%s", strerror(errno));
-                break;
-        }
-        else {
-                sleep(1);
+                UDPpacket mottaget_paket;
+                SDLNet_UDP_Recv(udPsocket, &mottaget_paket);
+                //klientens angivna position uppdaterar handen med kortet som skickats
+                sprintf(args->trick[mottaget_paket.data[0]], "%c%c", mottaget_paket.data[1],
+                        mottaget_paket.data[2]);
         }
 }
 UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress adr){
