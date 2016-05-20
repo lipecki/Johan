@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 	UDPpacket skicka_hand = createPacket(chanL, &hand_data, sizeof(hand_data), 100, 0, args->address);
 	UDPpacket mottaget_paket;
 
-	if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, args->address) < 0)) {
+	if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &args->address) < 0)) {
 		syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
 		// do something because we failed to bind
 	}
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < 4; i++) {
 		thread_arg[i].pos = i;
 		thread_arg[i].address.port = port;
-		thread_arg[i].address.host = ipv4;
+		thread_arg[i].address.host = htons("130.237.84.89");
 		strcpy(*thread_arg[i].trick, *trick);
 		pthread_create(&threads[i], NULL, player_waits_or_plays, (void *) &thread_arg[i]);
 	}
