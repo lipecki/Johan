@@ -16,7 +16,7 @@
 
 #define BUFLEN 512
 #define NPACK 4
-#define GAMEPORT 1337
+#define GAMEPORT 41337
 
 void diep(char *s) {
     perror(s);
@@ -25,7 +25,7 @@ void diep(char *s) {
 // from UDP made simple at https://www.abc.se/~m6695/udp.html
 int main(void) {
 	struct sockaddr_in si_me, si_other;
-	int s, i, len, slen=sizeof(si_other);
+	int fd, s, i, len, slen=sizeof(si_other);
 	char buf[BUFLEN]={"start"};
 	char *trick[] = {"02","00","2A","1C"};
 	char trick_to_send[20];
@@ -36,7 +36,8 @@ int main(void) {
 			strcat(trick_to_send,";");
 			strcat(trick_to_send,trick[i]);
 		}
-		printf("done with trick!\n");
+		fd = fopen("")
+		fprintf(fd,"done with trick!\n");
 	}
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
 		diep("socket");

@@ -26,7 +26,7 @@ void is_twenty_six(int[]);
 bool is_hundred (int []);
 void update_round_score(int [], int[], int);
 void separate_strings(char *, const char *, char *[],int);
-void split(char [],char *);
+int split(char *,char,char *[]);
 #endif
 
 

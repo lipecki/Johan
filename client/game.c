@@ -96,13 +96,28 @@ void separate_strings(char *inputstring, const char *separators, char *fill_this
     for (array_pointers = fill_this_array_of_pointers; (*array_pointers = strsep(&string, separators)) != NULL;)
         if (**array_pointers != '\0') if (++array_pointers >= &fill_this_array_of_pointers[size_of_array_to_fill]) break;
 }
-void split(char input[],char *separators){
-    char static *line_ref;
-    line_ref =strdup(input);
-    do {
-        fprintf(stdout, "%s;", strsep(&line_ref, separators));
-    } while (line_ref != '\0');
+// Parses data into given list using given separator
+// Returns number of items parsed into list
+int split(char *str,char separator,char *list[]) {
+    // http://stackoverflow.com/questions/3217629/
+    // in-c-how-do-i-find-the-index-of-a-character-within-a-string
+    int index,i=0;
+    char *e;
+    char *string;
+    string = str;
+
+    while((e = strchr(string, separator))) {
+        index = (int) (e - string);
+        string[index] = '\0';
+        list[i++] = string;
+        string = &string[index + 1];
+    }
+    if(!i) return i;
+    list[i] = string;
+    return i+1;
 }
+
+
 
 
 
