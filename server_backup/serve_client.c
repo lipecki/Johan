@@ -36,7 +36,7 @@ int main(void) {
 			strcat(trick_to_send,";");
 			strcat(trick_to_send,trick[i]);
 		}
-		printf("done with trick!");
+		printf("done with trick!\n");
 	}
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
 		diep("socket");
@@ -47,15 +47,12 @@ int main(void) {
 	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
 	if (bind(s, &si_me, sizeof(si_me))==-1)
 		diep("bind");
-	printf("boundid\n");
+	printf("bound\n");
 	while(strcmp(buf,"quit")){
-		printf(buf);
-		for (i=3; i<NPACK; i++) {
-			if (recvfrom(s, buf, BUFLEN, 0, &si_other, &slen)==-1)
-				diep("recvfrom()");
-			printf("Received packet from %s:%d\nData: %s\n\n",
-			       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
-		}
+		printf("buffer: %s \n",buf);
+		if (recvfrom(s, buf, BUFLEN, 0, &si_other, &slen)==-1) diep("recvfrom()");
+		printf("Received packet from %s:%d\nData: %s\n\n",
+		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
 		for (i=0; i<NPACK; i++) {
 			printf("Sending packet %s\n", trick[i]);
 			sprintf(buf, "This is packet %d\n", i);
