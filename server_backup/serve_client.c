@@ -16,7 +16,7 @@
 
 #define BUFLEN 512
 #define NPACK 4
-#define GAMEPORT 41337
+#define GAMEPORT 1337
 
 void diep(char *s) {
     perror(s);

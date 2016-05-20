@@ -9,7 +9,7 @@
 #include <SDL2_net/SDL_net.h>
 #include <SDL_net.h>
 
-#define PORT 41337
+#define PORT 1337
 #define MAXLEN 1024
 #define IP_ADDRESS "130.237.84.89"
 #define GAME_CLIENT "game_client "
@@ -19,73 +19,78 @@
 #define SERVER_REPLY "41337;1"
 
 void login(char [],char []);
-int main(int argc,char *argv[])
-{
+int main(int argc,char *argv[]) {
     IPaddress ip;
     UDPsocket sd;
-    UDPpacket udPpacket;
+    UDPpacket udPpacket, recvpacket;
     char server_ip[25] = "", newport[MAXLEN], SYN0[MAXLEN] = "hearts", SYN1[MAXLEN] = "port", log_string[40], pid[7];
-    udPpacket.data = (Uint8 *) strdup("quit");
-    printf("packet: %s\nstring: %s\n",udPpacket.data,SYN0);
+    udPpacket.data = (Uint8 *) strdup("never quit!");
+    printf("packet: %s\nstring: %s\n", udPpacket.data, SYN0);
+    udPpacket.len = 512;
     int result, len, len2;
     uint16_t port;
     FILE *fd;
-    
-    sprintf(pid,".%d",getpid());
+
+    sprintf(pid, ".%d", getpid());
     strcpy(log_string, LOGIN_LOG);
     //strcat(log_string, pid);
-    fd = fopen(log_string,"w+");
-    fprintf(fd,"open for business!\n");
+    fd = fopen(log_string, "w+");
+    fprintf(fd, "open for business!\n");
     fclose(fd);
     strcpy(server_ip, IP_ADDRESS);
     //port = (uint16_t) atoi(argv[1]);
     port = PORT;
-    if (SDLNet_ResolveHost(&ip, server_ip, port) < 0)
-    {
+    if (SDLNet_ResolveHost(&ip, server_ip, port) < 0) {
         fprintf(fd, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         exit(EXIT_FAILURE);
     }
-    
+
     if (!(sd = SDLNet_UDP_Open(0))) {
         fprintf(fd, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
         exit(EXIT_FAILURE);
     }
-    fd = fopen(log_string,"a+");
-    fprintf(fd,"socket %d open\n",fd);
+    fd = fopen(log_string, "a+");
+    fprintf(fd, "socket %d open\n", fd);
     printf("open\n");
-    
-    len = (int) strlen(SYN0)+1;
+
+    len = (int) strlen(SYN0) + 1;
 
     //IPaddress *address;
-    int channel,chanL;
-    channel=SDLNet_UDP_Bind(sd, -1, &ip);
+    int channel, chanL;
+    channel = SDLNet_UDP_Bind(sd, -1, &ip);
 
-    if(channel==-1) {
+    if (channel == -1) {
         printf("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
         // do something because we failed to bind
     }
-    int i=0;
-    while (SDLNet_UDP_Send(sd, channel,&udPpacket) < 0)
-    {
-        if(i++ > 1) break;
-        printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
-        chanL = (udPpacket.channel);
-        channel = chanL;
-        // do something because we failed to send
-        // this may just be because no addresses are bound to the channel...
+    int i = 0;
+    while ((len=SDLNet_UDP_Send(sd, channel, &udPpacket))){
+        if (len< 0) {
+            if (i++ > 1) break;
+            printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
+            chanL = (udPpacket.channel);
+            channel = chanL;
+            // do something because we failed to send
+            // this may just be because no addresses are bound to the channel...
+        }
+        recvpacket.len = MAXLEN;
+        recvpacket.channel = channel;
+        recvpacket.address.port = port;
+        result=SDLNet_UDP_Recv(sd, &recvpacket);
+        if(result) {
+            printf("Received packet data: %s\n",(char *) recvpacket.data);
+        }
+        printf("Recv: %d\n",result);
+        fd = fopen(log_string,"a+");
+        fprintf(stdout,"Emottaget: %s\n",recvpacket.data);
+        fclose(fd);
+        sleep(2);
     }
     printf("hearts sent\n");
     
     memset(SYN0, '\0', sizeof(SYN0));
     
-    result=SDLNet_UDP_Recv(sd, &udPpacket);
-    if(result) {
-        printf("Received packet data: %s\n",(char *) udPpacket.data);
-    }
-    printf("Recv: %d\n",result);
-    fd = fopen(log_string,"a+");
-    fprintf(fd,"%s\n",udPpacket.data);
-    fclose(fd);
+
 
     if(strcmp(SYN0, EXPECTED_RESPONSE) == 0) {
         len2 = (int) strlen(SYN1) + 1;
