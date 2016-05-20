@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 	// receives hearts_start, "%s %s %s %s %s %s", GAME_SERVER, port, ipv4 array
 
 	if (init_net()) printf("Success on init\n");
-	Args *args = (Args *) arguments;
+	Args *args;
 	Player me;
 	me.pos = args->pos;
 	// Bind address to the first free channel
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 	UDPpacket skicka_hand = createPacket(chanL, &hand_data, sizeof(hand_data), 100, 0, args->address);
 	UDPpacket mottaget_paket;
 
-	if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &args->address) < 0)) {
+	if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, args->address) < 0)) {
 		syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
 		// do something because we failed to bind
 	}
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 	pthread_t threads[4];
 	Args thread_arg[4];
 	__uint16_t port = htons((__uint16_t) atoi(argv[1]));
-	__uint32_t ipv4 = htonl((__uint32_t) atoi(ip));
+	//__uint32_t ipv4 = htonl((__uint32_t) atoi(ip));
 	char *trick[4];
 	int i = 0;
 	for (i = 0; i < 4; i++) {
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 	//UDPsocket udpsock;
 	//UDPpacket *packet;
 	int numsent;
-	numsent=SDLNet_UDP_Send(udpsock, packet->channel, packet);
+	numsent=SDLNet_UDP_Send(udPsocket, skicka_hand.channel, &skicka_hand);
 	if(!numsent) {
 		printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
 		// do something because we failed to send
