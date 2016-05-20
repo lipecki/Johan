@@ -47,7 +47,7 @@ typedef struct player_parms{
     int score;
     Card game_hand[13];
     Card won_hand[52];
-    Args *udpArguments;
+    Args udpArguments;
 }Player;
 
 #endif /* players_h */
