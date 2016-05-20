@@ -1,4 +1,4 @@
-all: clean account.o gameserver.o encrypt.o InetS3.o port_hearts.o players.o game.o serve_client.o serve_client gameserver InetS3
+all: clean account.o encrypt.o InetS3.o port_hearts.o players.o game.o serve_client.o serve_client # gameserver.o gameserver InetS3
 
 clean:
 	rm -f *.o
