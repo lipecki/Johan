@@ -26,7 +26,7 @@ void diep(char *s) {
 int main(void) {
 	struct sockaddr_in si_me, si_other;
 	int s, i, slen=sizeof(si_other);
-	char buf[BUFLEN];
+	char buf[BUFLEN]={"start"};
 	char *trick[] = {"02","00","2A","1C"};
 	char trick_to_send[20];
 	for(int i =0; i<NPACK;i++) {
@@ -40,21 +40,16 @@ int main(void) {
 	}
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
 		diep("socket");
-<<<<<<< HEAD
 	printf("socket open\n");
-
-=======
-	printf("socket");
->>>>>>> 1da828a3e504da56272309bdb43fcefcb36384fc
 	memset((char *) &si_me, 0, sizeof(si_me));
 	si_me.sin_family = AF_INET;
 	si_me.sin_port = htons(GAMEPORT);
 	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
 	if (bind(s, &si_me, sizeof(si_me))==-1)
 		diep("bind");
-	printf("bound\n");
-	while(!strcmp(buf,"quit")){
-		printf("waiting for data");
+	printf("boundid\n");
+	while(strcmp(buf,"quit")){
+		printf(buf);
 		for (i=3; i<NPACK; i++) {
 			if (recvfrom(s, buf, BUFLEN, 0, &si_other, &slen)==-1)
 				diep("recvfrom()");
@@ -68,6 +63,7 @@ int main(void) {
 				diep("sendto()");
 			}
 	}
+	printf("the end!");
     	close(s);
     	return 0;
 }
