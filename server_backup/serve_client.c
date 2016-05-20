@@ -48,15 +48,16 @@ int main(void) {
 	if (bind(s, &si_me, sizeof(si_me))==-1)
 		diep("bind");
 	printf("bound\n");
-	while(strcmp(buf,"quit")){
+	void *buffer = (void *) strdup(buf);
+	while(strcmp(buffer,"quit")){
 		printf("buffer: %s \n",buf);
-		if ((len=recvfrom(s, buf, BUFLEN, 0, &si_other, &slen))==-1) diep("recvfrom()");
+		if ((len=recvfrom(s, buffer, BUFLEN, 0, &si_other, &slen))==-1) diep("recvfrom()");
 		printf("Received packet from %s:%d\nData: %s\nLength: %d\n",
-		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf,len);
+		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buffer,len);
 		for (i=0; i<NPACK; i++) {
 			printf("Sending packet %s\n", trick[i]);
 			sprintf(buf, "This is packet %d\n", i);
-			if (sendto(s, buf, BUFLEN, 0, &si_other, slen)==-1)
+			if (sendto(s, trick[i], BUFLEN, 0, &si_other, slen)==-1)
 				diep("sendto()");
 			}
 	}
