@@ -11,6 +11,7 @@
 
 void* player_waits_or_plays (void *arguments) {
         Player *args = (Player *) arguments;
+        UDPsocket udPsocket;
         while (1) {
                 int my_turn = 1;
                 if (my_turn) {
@@ -24,7 +25,7 @@ void* player_waits_or_plays (void *arguments) {
                                 // try to receive a waiting udp packet
                                 // UDPsocket udpsock;
                                 UDPpacket *packet=args->udpArguments->udPpacket;
-                                UDPsocket udPsocket=args->udpArguments->udPsocket;
+                                udPsocket=args->udpArguments->udPsocket;
                                 int numrecv;
                                 numrecv = SDLNet_UDP_Recv(udPsocket, packet);
                                 if (numrecv) {
@@ -37,8 +38,10 @@ void* player_waits_or_plays (void *arguments) {
                 }
                 UDPpacket mottaget_paket;
                 SDLNet_UDP_Recv(udPsocket, &mottaget_paket);
+                char *trick[]={"FF;FF;FF;FF;"};
+
                 //klientens angivna position uppdaterar handen med kortet som skickats
-                sprintf(args->trick[mottaget_paket.data[0]], "%c%c", mottaget_paket.data[1],
+                sprintf(trick[0], "%c%c", mottaget_paket.data[1],
                         mottaget_paket.data[2]);
         }
 }
