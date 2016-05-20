@@ -102,9 +102,10 @@ int split(char *str,char separator,char *list[]) {
     // http://stackoverflow.com/questions/3217629/
     // in-c-how-do-i-find-the-index-of-a-character-within-a-string
     int index,i=0;
-    char *e;
-    char *string;
+    char *e, *string;
+    char sep[] = {separator,'\0'};
     string = str;
+    if (str[((int) strlen(str))-1] != separator) strcat(string,sep);
 
     while((e = strchr(string, separator)) && i < 20) {
         index = (int) (e - string);
@@ -115,9 +116,7 @@ int split(char *str,char separator,char *list[]) {
     return i;
 }
 
-int merge(char *list[],char separator,char string[]){
 
-}
 
 
 

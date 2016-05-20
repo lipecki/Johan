@@ -31,10 +31,13 @@ int main(void) {
 	char *trick[] = {"02","00","2A","1C"};
 	char trick_to_send[20];
 	for(int i =0; i<NPACK;i++) {
-		if (!i) strcpy(trick_to_send, trick[i]);
+		if (!i) {
+			strcpy(trick_to_send, trick[i]);
+			strcat(trick_to_send, ";");
+		}
 		else {
-			strcat(trick_to_send,";");
 			strcat(trick_to_send,trick[i]);
+			strcat(trick_to_send,";");
 		}
 		fprintf(fd,"done with trick!\n");
 	}
@@ -54,10 +57,10 @@ int main(void) {
 		if ((len=recvfrom(s, buffer, BUFLEN, 0, &si_other, &slen))==-1) diep("recvfrom()");
 		printf("Received packet from %s:%d\nData: %s\nLength: %d\n",
 		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buffer,len);
-		for (i=0; i<NPACK; i++) {
+		for (i=3; i<NPACK; i++) {
 			printf("Sending packet %s\n", trick[i]);
 			sprintf(buf, "This is packet %d\n", i);
-			if (sendto(s, trick[i], BUFLEN, 0, &si_other, slen)==-1)
+			if (sendto(s, (char *) trick_to_send, BUFLEN, 0, &si_other, slen)==-1)
 				diep("sendto()");
 			}
 	}
