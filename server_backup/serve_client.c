@@ -20,23 +20,22 @@
 
 void diep(char *s) {
     perror(s);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 // from UDP made simple at https://www.abc.se/~m6695/udp.html
 int main(void) {
 	struct sockaddr_in si_me, si_other;
 	int fd, s, i, len, slen=sizeof(si_other);
+	fd = fopen("/var/tmp/serve_client","w");
 	char buf[BUFLEN]={"start"};
 	char *trick[] = {"02","00","2A","1C"};
 	char trick_to_send[20];
 	for(int i =0; i<NPACK;i++) {
-		printf("assigning trick\n");
 		if (!i) strcpy(trick_to_send, trick[i]);
 		else {
 			strcat(trick_to_send,";");
 			strcat(trick_to_send,trick[i]);
 		}
-		fd = fopen("")
 		fprintf(fd,"done with trick!\n");
 	}
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)

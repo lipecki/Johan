@@ -106,15 +106,17 @@ int split(char *str,char separator,char *list[]) {
     char *string;
     string = str;
 
-    while((e = strchr(string, separator))) {
+    while((e = strchr(string, separator)) && i < 20) {
         index = (int) (e - string);
         string[index] = '\0';
         list[i++] = string;
         string = &string[index + 1];
     }
-    if(!i) return i;
-    list[i] = string;
-    return i+1;
+    return i;
+}
+
+int merge(char *list[],char separator,char string[]){
+
 }
 
 
