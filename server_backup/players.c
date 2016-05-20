@@ -15,88 +15,88 @@ void* player_waits_or_plays (void *arguments) {
         while (1) {
                 int my_turn = 1;
                 if (my_turn) {
-                        if (!(SDLNet_UDP_Send(args->udpArguments->udPsocket,
-                                              args->udpArguments->channel,
-                                              &(args->udpArguments->address)))){
-                                syslog(LOG_ERR, "%s", strerror(errno));
-                                my_turn = 0;
-                        }
-                        else {
-                                // try to receive a waiting udp packet
-                                // UDPsocket udpsock;
-                                UDPpacket *packet=args->udpArguments->udPpacket;
-                                udPsocket=args->udpArguments->udPsocket;
-                                int numrecv;
-                                numrecv = SDLNet_UDP_Recv(udPsocket, packet);
-                                if (numrecv) {
-                                        // do something with packet
-                                }
-                        }
-                }
-                else {
-                        sleep(15);
-                }
-                UDPpacket mottaget_paket;
-                SDLNet_UDP_Recv(udPsocket, &mottaget_paket);
-                char *trick[]={"FF;FF;FF;FF;"};
+                        /* if (!(SDLNet_UDP_Send(args->udpArguments->udPsocket,
+                                               args->udpArguments->channel,
+                                               &(args->udpArguments->address)))){
+                                 syslog(LOG_ERR, "%s", strerror(errno));
+                                 my_turn = 0;
+                         }
+                         else {
+                                 // try to receive a waiting udp packet
+                                 // UDPsocket udpsock;
+                                 UDPpacket *packet=args->udpArguments->udPpacket;
+                                 udPsocket=args->udpArguments->udPsocket;
+                                 int numrecv;
+                                 numrecv = SDLNet_UDP_Recv(udPsocket, packet);
+                                 if (numrecv) {
+                                         // do something with packet
+                                 }
+                         }
+                 }
+                 else {
+                         sleep(15);
+                 }
+                 UDPpacket mottaget_paket;
+                 SDLNet_UDP_Recv(udPsocket, &mottaget_paket);
+                 char *trick[]={"FF;FF;FF;FF;"};
 
-                //klientens angivna position uppdaterar handen med kortet som skickats
-                sprintf(trick[0], "%c%c", mottaget_paket.data[1],
-                        mottaget_paket.data[2]);
-        }
-}
-UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress adr){
-        UDPpacket pkt;
-        pkt.channel = cnl;
-        pkt.data = data;
-        pkt.len = len;
-        pkt.maxlen = maxlen;
-        pkt.status = status;
-        pkt.address = adr;
-        return pkt;
-}
+                 //klientens angivna position uppdaterar handen med kortet som skickats
+                 sprintf(trick[0], "%c%c", mottaget_paket.data[1],
+                         mottaget_paket.data[2]);
+         }
+ }
+ UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress adr){
+         UDPpacket pkt;
+         pkt.channel = cnl;
+         pkt.data = data;
+         pkt.len = len;
+         pkt.maxlen = maxlen;
+         pkt.status = status;
+         pkt.address = adr;
+         return pkt;
+ }
 
-/*void test(int argc,char *argv[])
-{
-    // receives hearts_start, "%s %s %s %s %s %s", GAME_SERVER, port, ipv4 array
-    Trick *trick1;
-    IPaddress iPaddress;
+ /*void test(int argc,char *argv[])
+ {
+     // receives hearts_start, "%s %s %s %s %s %s", GAME_SERVER, port, ipv4 array
+     Trick *trick1;
+     IPaddress iPaddress;
 
-    if (init_net()) printf("Success on init\n");
-    __uint16_t port = htons((__uint16_t) argv[1]);
-    __uint32_t ipv4 = htonl((__uint32_t)IP_ADDRESS);
+     if (init_net()) printf("Success on init\n");
+     __uint16_t port = htons((__uint16_t) argv[1]);
+     __uint32_t ipv4 = htonl((__uint32_t)IP_ADDRESS);
 
-    iPaddress.host = ipv4;
-    iPaddress.port = port;
-    trick1->address = iPaddress;
+     iPaddress.host = ipv4;
+     iPaddress.port = port;
+     trick1->address = iPaddress;
 
-    char *trick[] = {"02","00","2A","1C"};
-    for(int i=0;i<4;i++) strcpy(trick1->trick[i],trick[i]);
-    // Bind address to the first free channel
-    // UDPsocket udpsock;
-    // IPaddress *address;
-    int chanL=0, mottagna_paket=0;
-    char str[40] = {'\0'};
-    sprintf(str,"%s;%s;%s;%s;",trick1->trick[0],trick1->trick[1],trick1->trick[2],trick1->trick[3]);
+     char *trick[] = {"02","00","2A","1C"};
+     for(int i=0;i<4;i++) strcpy(trick1->trick[i],trick[i]);
+     // Bind address to the first free channel
+     // UDPsocket udpsock;
+     // IPaddress *address;
+     int chanL=0, mottagna_paket=0;
+     char str[40] = {'\0'};
+     sprintf(str,"%s;%s;%s;%s;",trick1->trick[0],trick1->trick[1],trick1->trick[2],trick1->trick[3]);
 
-    // create a UDPsocket on port
-    UDPsocket udPsocket;
+     // create a UDPsocket on port
+     UDPsocket udPsocket;
 
-    if(!(udPsocket=SDLNet_UDP_Open(iPaddress.port))){
-        printf("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
-        exit(2);
-    }
-    uint8_t *string=0;
-    strcpy(string,str);
-    UDPpacket skicka_hand = createPacket(chanL,string,sizeof(str),100,0,iPaddress);
-    UDPpacket mottaget_paket;
+     if(!(udPsocket=SDLNet_UDP_Open(iPaddress.port))){
+         printf("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
+         exit(2);
+     }
+     uint8_t *string=0;
+     strcpy(string,str);
+     UDPpacket skicka_hand = createPacket(chanL,string,sizeof(str),100,0,iPaddress);
+     UDPpacket mottaget_paket;
 
-    if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &iPaddress)) < 0) {
-        syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
-        // do something because we failed to bind
-    }
+     if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &iPaddress)) < 0) {
+         syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+         // do something because we failed to bind
+     }
 
-}*/
+ }*/
 /*
 int main(){
 
@@ -136,8 +136,12 @@ int main(){
      3. When the loop has finished, all the threads are joined to the main program
      and then the main program exits.
      return 0;
-}
 */
+                }
+        }
+}
+
+
 
 
 
