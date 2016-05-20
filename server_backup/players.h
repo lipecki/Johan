@@ -29,25 +29,22 @@ typedef struct {
     int channel;
     UDPsocket udPsocket;
     UDPpacket *udPpacket;
-
 }Args;
 typedef struct {
     IPaddress address;
     char *trick[4];
 
 }Trick;
-void* player_waits_or_plays (void *);
-// Pekare eftersom pthread_create() tar en pekare
-UDPpacket createPacket(int, uint8_t *, int, int, int, IPaddress );
-
-struct player_parms;
 typedef struct player_parms{
     int pos;
     int id;
     int score;
     Card game_hand[13];
     Card won_hand[52];
-    Args udpArguments;
+    Args *udpArguments;
 }Player;
+UDPpacket createPacket(int, uint8_t *, int, int, int, IPaddress);
+void* player_waits_or_plays (void *);
+// Pekare eftersom pthread_create() tar en pekare
 
 #endif /* players_h */
