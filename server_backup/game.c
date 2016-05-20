@@ -103,6 +103,16 @@ void split(char input[],char *separators){
         fprintf(stdout, "%s;", strsep(&line_ref, separators));
     } while (line_ref != '\0');
 }
+void trick_splitter(char received_trick[],char *trick[]){
+        int k=0;
+        for(int i= 0;i<strlen(recieved_trick);i++,k++) {
+                trick[k][0] = recieved_trick[i++];
+                trick[k][1] = recieved_trick[i++];
+                trick[k][2] = '\0';
+                printf(trick[k]);
+        }
+}
+
 
 
 

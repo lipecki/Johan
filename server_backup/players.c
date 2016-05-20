@@ -10,71 +10,41 @@
 
 
 void* player_waits_or_plays (void *arguments) {
-    Args *args = (Args*) arguments;
-    Player me;
-    me.pos = args->pos;
-    // Bind address to the first free channel
-    // UDPsocket udpsock;
-    // IPaddress *address;
-    int chanL, mottagna_paket;
-    uint8_t speila = 1;
-    uint8_t hand_data;
-    char *str;
-    sprintf(str,"%s;%s;%s;%s;",*args->trick[0],*args->trick[1],*args->trick[2],
-            *args->trick[3]);
-    hand_data = atoi(str);
-
-
-
-    // create a UDPsocket on port 6666 (server)
-    UDPsocket udPsocket;
-
-    udPsocket=SDLNet_UDP_Open(args->address.port);
-    if(!udPsocket) {
-        printf("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
-        exit(2);
-    }
-
-
-    UDPpacket spela = createPacket(chanL, &speila, 1, 100, 0, args->address);
-    UDPpacket skicka_hand = createPacket(chanL,&hand_data,sizeof(hand_data),100,0,args->address);
-    UDPpacket mottaget_paket;
-
-    if ((chanL = SDLNet_UDP_Bind(udPsocket, -1, &args->address) < 0)) {
-        syslog(LOG_ERR, "SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
-        // do something because we failed to bind
-    }
-
-    else {
         while (1) {
-            int my_turn=1;
-            if (my_turn) {
-                if (!(SDLNet_UDP_Send(udPsocket, (&spela)->channel, &spela))) {
-                    syslog(LOG_ERR, "%s", strerror(errno));
-                    my_turn=0;
+                int my_turn = 1;
+                if (my_turn) {
+                        if (!(SDLNet_UDP_Send(udPsocket, (&spela)->channel, &spela))) {
+                                syslog(LOG_ERR, "%s", strerror(errno));
+                                my_turn = 0;
+                        }
+                        else {
+                                // try to receive a waiting udp packet
+                                // UDPsocket udpsock;
+                                UDPpacket packet;
+                                int numrecv;
+                                numrecv = SDLNet_UDP_Recv(udpsock, &packet);
+                                if (numrecv) {
+                                        // do something with packet
+                                }
+                        }
                 }
                 else {
-                    sleep(15);
+                        sleep(15);
                 }
                 mottagna_paket = SDLNet_UDP_Recv(udPsocket, &mottaget_paket);
-                if(mottagna_paket) {
-                    //klientens angivna position uppdaterar handen med kortet som skickats
-                    sprintf(args->trick[mottaget_paket.data[0]],"%x%x",mottaget_paket.data[1],mottaget_paket.data[2]);
+                if (mottagna_paket) {
+                        //klientens angivna position uppdaterar handen med kortet som skickats
+                        sprintf(args->trick[mottaget_paket.data[0]], "%x%x", mottaget_paket.data[1],
+                                mottaget_paket.data[2]);
                 }
-
-            }
-            else {
-                if (!(SDLNet_UDP_Send(udPsocket, (&skicka_hand)->channel, &skicka_hand))) {
-                    syslog(LOG_ERR, "%s", strerror(errno));
-                    break;
-                }
-                else {
-                    sleep(1);
-                }
-            }
         }
-    }
-    return 0;
+        if (!(SDLNet_UDP_Send(udPsocket, (&skicka_hand)->channel, &skicka_hand))) {
+                syslog(LOG_ERR, "%s", strerror(errno));
+                break;
+        }
+        else {
+                sleep(1);
+        }
 }
 UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress adr){
         UDPpacket pkt;
