@@ -25,7 +25,7 @@ void diep(char *s) {
 // from UDP made simple at https://www.abc.se/~m6695/udp.html
 int main(void) {
 	struct sockaddr_in si_me, si_other;
-	int s, i, slen=sizeof(si_other);
+	int s, i, len, slen=sizeof(si_other);
 	char buf[BUFLEN]={"start"};
 	char *trick[] = {"02","00","2A","1C"};
 	char trick_to_send[20];
@@ -50,9 +50,9 @@ int main(void) {
 	printf("bound\n");
 	while(strcmp(buf,"quit")){
 		printf("buffer: %s \n",buf);
-		if (recvfrom(s, buf, BUFLEN, 0, &si_other, &slen)==-1) diep("recvfrom()");
-		printf("Received packet from %s:%d\nData: %s\n\n",
-		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
+		if ((len=recvfrom(s, buf, BUFLEN, 0, &si_other, &slen))==-1) diep("recvfrom()");
+		printf("Received packet from %s:%d\nData: %s\nLength: %d\n",
+		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf,len);
 		for (i=0; i<NPACK; i++) {
 			printf("Sending packet %s\n", trick[i]);
 			sprintf(buf, "This is packet %d\n", i);

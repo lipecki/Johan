@@ -7,6 +7,7 @@
 #include "game.h"
 #include <SDL2/SDL.h>
 #include <SDL2_net/SDL_net.h>
+#include <SDL_net.h>
 
 #define PORT 41337
 #define MAXLEN 1024
@@ -24,7 +25,8 @@ int main(int argc,char *argv[])
     UDPsocket sd;
     UDPpacket udPpacket;
     char server_ip[25] = "", newport[MAXLEN], SYN0[MAXLEN] = "hearts", SYN1[MAXLEN] = "port", log_string[40], pid[7];
-
+    udPpacket.data = (Uint8 *) strdup("quit");
+    printf("packet: %s\nstring: %s\n",udPpacket.data,SYN0);
     int result, len, len2;
     uint16_t port;
     FILE *fd;
@@ -35,7 +37,6 @@ int main(int argc,char *argv[])
     fd = fopen(log_string,"w+");
     fprintf(fd,"open for business!\n");
     fclose(fd);
-
     strcpy(server_ip, IP_ADDRESS);
     //port = (uint16_t) atoi(argv[1]);
     port = PORT;
