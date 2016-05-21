@@ -19,156 +19,6 @@
 #include "port_hearts.h"
 #include "account.h"
 
-void sigchld_handlr(int s)
-{
-while(waitpid(-1, NULL, WNOHANG) > 0);
-}
-
-void sigchld_handler(int s)
-{
-    switch(s) {
-        case(SIGTSTP):  exit((long)SIG_IGN);  break;/* Various TTY signals */
-        case(SIGTTOU):  exit((long)SIG_IGN);  break;
-        case(SIGTTIN):  exit((long)SIG_IGN);  break;
-        case(SIGHUP):   exit((long)SIG_IGN);  break;/* Ignore hangup signal */
-        default:        exit((long)SIG_DFL);  break;
-    }
-}
-
-void child_handler(int signum)
-{
-
-    switch(signum) {
-        case SIGALRM:   exit(EXIT_FAILURE); break;
-        case SIGUSR1:   syslog(LOG_INFO, "child_handler: SIGUSR1"); exit(EXIT_SUCCESS); break;
-        case SIGCHLD:   exit(EXIT_FAILURE); break;
-        default:        exit((long)SIG_DFL); break;
-    }
-}
-
-int kill_server(void)
-{
-    int link;
-    //remove the file so that another one may be created
-    if((link=unlink(FILENAME))==-1){
-       syslog(LOG_ERR, "unable to unlink file, code %d (%s)",
-                errno, strerror(errno));
-        exit(1);
-    }
-    return 0;
-}
-
-void daemonize(const char *lockfile)
-{
-    pid_t pid, sid, parent,child;
-    int lfp = -1;
-    FILE *pid_fp;
-    struct sigaction act,old_act,act2;
-
-    act.sa_handler=child_handler;
-    sigemptyset (&act.sa_mask);
-    act.sa_flags = 0;
-
-    /* already a daemon */
-    if (getppid() == 1 ) {
-        syslog(LOG_ERR, "already a daemon! Code = %d (%s)\n",
-                errno, strerror(errno));
-        return;
-    }
-    //printf("Ready for the lockfile!\n");
-    /* Create the lock file as the current user */
-    if ( lockfile && lockfile[0] ) {
-        lfp = open(lockfile,O_RDWR|O_CREAT,0640);   //|O_EXCL taken care of in the start-file
-        if ( lfp < 0 ) {
-            syslog( LOG_ERR, "unable to create lock file %s, code=%d (%s)\n",
-                    lockfile, errno, strerror(errno) );
-            exit(EXIT_FAILURE);
-        }
-    }
-    //printf("lockfile done\n");
-
-    /* Drop user if there is one, and we were run as root */
-    if ( getuid() == 0 || geteuid() == 0 ) {
-        struct passwd *pw = getpwnam(RUN_AS_USER);
-        if ( pw ) {
-            syslog( LOG_NOTICE, "setting user to " RUN_AS_USER );
-            setuid( pw->pw_uid );
-        }
-    }
-
-    /*
-    Trap signals that we expect to recieve,  sighandler_t signal(int signum, sighandler_t handler)
-    http://www.gnu.org/software/libc/manual/html_node/Sigaction-Function-Example.html
-    */
-    sigaction(SIGCHLD,&act,&old_act);
-    sigaction(SIGUSR1,&act,&old_act);
-    sigaction(SIGALRM,&act,&old_act);
-
-    /* Fork off the parent process */
-    pid = fork();
-    if (pid < 0) {
-        syslog( LOG_ERR, "unable to fork daemon, code=%d (%s)",
-                errno, strerror(errno) );
-        exit(EXIT_FAILURE);
-    }
-    /* If we got a good PID, then we can exit the parent process. */
-    if (pid > 0) {
-
-        /* Wait for confirmation from the child via SIGTERM or SIGCHLD, or
-           for two seconds to elapse (SIGALRM).  pause() should not return. */
-        alarm(2);
-        pause();
-
-        exit(EXIT_FAILURE);
-    }
-
-    /* At this point we are executing as the child process */
-    if(!(pid_fp = fopen(FILENAME,"w"))){
-        syslog(LOG_ERR,"pid_fp",strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-
-    fprintf(pid_fp,"%d\n",child = getpid()); //this writes the pid to revd.pid and ensures all other data is wiped
-    fclose(pid_fp);
-
-    /* Cancel certain signals */
-    sigaction(SIGTSTP,&act2,NULL); /* Various TTY signals */
-    sigaction(SIGTTOU,&act2,NULL);
-    sigaction(SIGTTIN,&act2,NULL);
-    sigaction(SIGHUP,&act2,NULL);
-    sigaction(SIGTERM,&act2,NULL);
-
-    /* Change the file mode mask */
-    //printf("umask!\n");
-    umask(0);
-
-    /* Create a new SID for the child process */
-    sid = setsid();
-    if (sid < 0) {
-        syslog( LOG_ERR, "unable to create a new session, code %d (%s)",
-                errno, strerror(errno) );
-        exit(EXIT_FAILURE);
-    } //else syslog(LOG_INFO, "sid ok!");
-
-    /* Change the current working directory.  This prevents the current
-       directory from being locked; hence not being able to remove it. */
-    if ((chdir("/")) < 0) {
-        syslog( LOG_ERR, "unable to change directory to %s, code %d (%s)",
-                "/", errno, strerror(errno) );
-        exit(EXIT_FAILURE);
-    }
-    //printf("directory changed\n");
-
-    /* Redirect standard files to /dev/null */
-    freopen("/dev/null", "r", stdin);
-    freopen("/dev/null", "w", stdout);
-    freopen("/dev/null", "w", stderr);
-
-    /* Tell the parent process that we are A-okay */
-    kill(getppid(),SIGUSR1);
-    syslog(LOG_INFO, "parent killed!");
-}
-
 int main(int argc,char const *argv[])
 {
     int len, n, pid, s, s2, inet_fd, connections=0;
@@ -200,15 +50,7 @@ int main(int argc,char const *argv[])
     inet.sin_family = AF_INET;
     inet.sin_port = htons(atoi(PORT));
     inet_pton(AF_INET,IP_ADDRESS,&inet.sin_addr);
-    /*(strcpy(inet.sin_path, argv[1]));
-    syslog(LOG_INFO, "path copied!\n");
 
-    if(unlink(inet.sin_path)){
-        syslog(LOG_ERR, strerror(errno));
-        exit(1);
-    } else syslog(LOG_INFO, "path unlinked!\n");*/
-
-    //len = strlen(local.sun_path) + sizeof(local.sun_family);
     if (bind(inet_fd, (struct sockaddr *)&inet, sizeof inet) == -1) {
         syslog(LOG_ERR, strerror(errno));
         exit(1);
@@ -272,23 +114,19 @@ int main(int argc,char const *argv[])
                     // You get three tries to login
                     syslog(LOG_INFO,"login-loop entered");
                     Account acc, account;
-                    //strcpy(acc.username, "");
                     account=prompt_for_login(&s2);
-                    if(!strcmp(account.username, acc.username)){
+                    if(argv[2]){
                         j += 1;
                         if (j==3){ 
                             strcpy(arguments,"login failed");
-                            if (send(s2,arguments,30,0) < 0)
-				syslog(LOG_ERR,"%s",strerror(errno));
-                            close(s2);
-                            exit(EXIT_FAILURE);
+                            if (send(s2,arguments,30,0) < 0) {
+                                syslog(LOG_ERR, "%s", strerror(errno));
+                                close(s2);
+                                exit(EXIT_FAILURE);
+                            }
                         }
                         else continue;
-                    }
-                    else {
-                        //if((connection_no) == 0) memset(guid,'\0',4);
-                        //strcpy(guid[connection_no],assign_guid());
-                        //strcpy(all_guids[connections],guid[connection_no]);
+                    } else {
                         if((connection_no) == 3) {
                             if(start_game_server(get_random_port_number()) < 0){
                                 syslog(LOG_ERR,"%s",strerror(errno));
@@ -296,7 +134,7 @@ int main(int argc,char const *argv[])
                                 syslog(LOG_INFO,"game start failed");
                             }
                         }
-                    }break;
+                    } break;
                 }
                 if (!done){                                     //Inget fel eller avslut, enligt tilldelning
                     syslog(LOG_INFO, "!done\n");
@@ -322,14 +160,6 @@ int main(int argc,char const *argv[])
             exit(0);
         }
         else close(s2);
-        //if((wate=waitpid(0,NULL,WNOHANG))==-1)perror("waitpid\n");
+        kill_server();
     }
-    // Finish up
-    if((kill_server())){
-        syslog(LOG_ERR, "Server process not terminated. Pid file %, code = %d, error: %s",
-               FILENAME, errno, strerror(errno));
-               exit(EXIT_FAILURE);
-    }   else     syslog(LOG_NOTICE, "terminated" );
-    closelog();
-    return 0;
 }

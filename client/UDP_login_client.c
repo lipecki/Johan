@@ -9,6 +9,7 @@
 #include <SDL2_net/SDL_net.h>
 #include <SDL_net.h>
 
+#define MESSAGE "# This is the gamelog for the card game Hearts, \n# developed for the network communications course at KTH Haninge, spring term 2016"
 #define PORT 41337
 #define MAXLEN 1024
 #define IP_ADDRESS "130.237.84.89"
@@ -22,10 +23,10 @@ void login(char [],char []);
 int main(int argc,char *argv[]) {
     IPaddress ip;
     UDPsocket sd;
-    UDPpacket udPpacket, recvpacket;
-    char server_ip[25] = "", newport[MAXLEN], SYN0[MAXLEN] = "hearts", SYN1[MAXLEN] = "port", log_string[40], pid[7];
-    udPpacket.data = (Uint8 *) strdup("never quit!");
-    printf("packet: %s\nstring: %s\n", udPpacket.data, SYN0);
+    UDPpacket udPpacket;
+    char server_ip[25] = "", log_string[40], pid[7];
+    udPpacket.data = (Uint8 *) strdup("you rule!");
+    printf("packet: %s\n", udPpacket.data);
     udPpacket.len = 512;
     int result, len, len2;
     uint16_t port;
@@ -33,9 +34,9 @@ int main(int argc,char *argv[]) {
 
     sprintf(pid, ".%d", getpid());
     strcpy(log_string, LOGIN_LOG);
-    //strcat(log_string, pid);
+    strcat(log_string, pid);
     fd = fopen(log_string, "w+");
-    fprintf(fd, "open for business!\n");
+    fprintf(fd, "%s\n",MESSAGE);
     fclose(fd);
     strcpy(server_ip, IP_ADDRESS);
     //port = (uint16_t) atoi(argv[1]);
@@ -50,16 +51,16 @@ int main(int argc,char *argv[]) {
         exit(EXIT_FAILURE);
     }
     fd = fopen(log_string, "a+");
-    fprintf(stdout, "socket %d open\n", fd);
-
-    len = (int) strlen(SYN0) + 1;
+    fprintf(fd, "socket %d open\n", fd);
 
     //IPaddress *address;
     int channel, chanL;
     channel = SDLNet_UDP_Bind(sd, -1, &ip);
 
     if (channel == -1) {
-        printf("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+        fd = fopen(log_string,"a+");
+        fprintf(fd,"SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+        close(fd);
         // do something because we failed to bind
     }
     else    printf("bound to channel %d\n",channel);
@@ -76,6 +77,8 @@ int main(int argc,char *argv[]) {
         // create a new UDPpacket to hold 1024 bytes of data
         UDPpacket *packet;
         packet=SDLNet_AllocPacket(1024);
+        char *array_of_pointers[20];
+        char *tmp;
         if(!packet) {
             printf("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
             sleep(2);
@@ -86,74 +89,27 @@ int main(int argc,char *argv[]) {
             // do stuff with this new packet
             result=SDLNet_UDP_Recv(sd, packet);
             if(result) {
-                printf("Received packet data: %s\n",(char *) packet->data);
+                printf("Received packet data: %s\n", (char *) packet->data);
+
+                tmp = (char *) packet->data;
+
+                split((char *) packet->data, ';', array_of_pointers);
+                printf("Split data: ");
+                while (i < 4) printf("%s ", array_of_pointers[i++]);
+                printf("\n");
+                i = 0;
+                fd = fopen(log_string, "a+");
+                fprintf(fd, "Emottaget: %s\n", packet->data);
+                fclose(fd);
+                sleep(2);
+                // SDLNet_FreePacket this packet when finished with it
+                SDLNet_FreePacket(packet);
             }
-            printf("Recv: %d\n",result);
-            fd = fopen(log_string,"a+");
-            fprintf(stdout,"Emottaget: %s\n",packet->data);
-            fclose(fd);
-            sleep(2);
-            // SDLNet_FreePacket this packet when finished with it
-            SDLNet_FreePacket(packet);
         }
 
     }
-    printf("hearts sent\n");
-    
-    memset(SYN0, '\0', sizeof(SYN0));
-    
 
-
-    if(strcmp(SYN0, EXPECTED_RESPONSE) == 0) {
-        len2 = (int) strlen(SYN1) + 1;
-        if (SDLNet_UDP_Send(sd, channel,&udPpacket) < len2) {
-            printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
-             //exit(EXIT_FAILURE);
-        }
-        printf("SDLNet_TCP_Sent: %s\n", SYN1);
-
-        memset(SYN1, '\0', sizeof(SYN1));
-        // Servern skickar "ENDOFTRANS" efter varje ACK
-        // Klienten väntar på ett portnummer(40-50 k) och spelarposition[0:3]
-        do {
-            result=SDLNet_UDP_Recv(sd, &udPpacket);
-            printf("Recv: %s \n", udPpacket.data);
-            sleep(2);
-        } while (!strcmp(SYN1, "ENDOFTRANS"));  // så länge inget nytt skickas tar vi en tupplur på 2 s i taget
-
-        char user_name[100] = {'0'};
-        char password[30] = {'0'};
-        char tmp[100];
-        char *array_of_pointers[4];
-
-        if (!strcmp(SYN1, "account")) {
-            while (!strcmp(SYN1, "account")) {
-                login(user_name, password);
-                len2 = (int) sizeof(user_name + 1);
-                if (SDLNet_UDP_Send(sd, channel,&udPpacket) < len2) printf("%s*", strerror(errno));
-                printf("Sent: %s\n", user_name);
-                sleep(1);
-                printf("Characters received: %d\n", result=SDLNet_UDP_Recv(sd, &udPpacket));
-            }
-            strcpy(tmp,SYN1);
-            separate_strings(tmp,";",array_of_pointers, sizeof((array_of_pointers)));
-        }
-        else separate_strings(SERVER_REPLY,";",array_of_pointers, sizeof((array_of_pointers)));
-        //sammanfoga strängen som startar spelklienten
-        strcpy(newport, "./");
-        strcat(newport, GAME_CLIENT);
-
-        //lägg till portnumret och starta en ny spelprocess
-        strcat(newport, SYN1);
-        printf("commandline argument: %s %s \n", array_of_pointers[0],array_of_pointers[1]);
-        system(newport);
-        fprintf(fd, "%s", strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-
-    else fprintf(fd, "Returned error string: %s\n", SYN0);
-    fclose(fd);
-    return -1;
+    return 0;
 }
 void login(char user_name[],char password[]){
     printf("Ange användarnamn: \n");

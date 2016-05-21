@@ -54,7 +54,9 @@
 
 // Generates a 32 char length (33 with \0) GUID and stores it in "guid"
 int getGuid(char guid[]);
-// Forks a game server if provided with a port number and an array of 4 guids,
+//takes a lockfile pointer as argument and daemonizes process
+void daemonize(const char *);
+// Forks a game server if provided with a port number,
 // returns what system(3) returns, -1 indicates an error.
 int start_game_server(int);
 // Checks string for SYN0 if second argument points to a 0 and checks for SYN1 if second argument doesn't point to a 0
@@ -63,9 +65,14 @@ int start_game_server(int);
 int syn_ack(char *,int*,int,int,int);
 // Returns a random number between 40 k and 50 k
 int get_random_port_number(void);
-// Sends the string "login" using provided socket descriptor pointer and send(2)
-// Receives an Account struct using recv(2) and returns it on success.
-// Login failure returns account username NULL
+//Asks user for Account username and password over given TCP - socket descriptor.
+// stdout is closed after this function. Use freopen() to retreive it again.
+// Returns Account with username and password.
 Account prompt_for_login(int*);
 int getGuid(char[]);
+//Removes lockfile for another to take it's place
+int kill_server(void);
+void sigchld_handlr(int);
+void sigchld_handler(int);
+void child_handler(int);
 #endif /* port_hearts_h */

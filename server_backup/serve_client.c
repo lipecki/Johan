@@ -25,10 +25,15 @@ void diep(char *s) {
 // from UDP made simple at https://www.abc.se/~m6695/udp.html
 int main(void) {
 	struct sockaddr_in si_me, si_other;
-	int fd, s, i, len, slen=sizeof(si_other);
+	int fd, s, i, len=13, slen=sizeof(si_other);
 	fd = fopen("/var/tmp/serve_client","w");
 	char buf[BUFLEN]={"start"};
-	char *trick[] = {"02","00","2A","1C"};
+
+	char *hand[len];
+	FF_trick();
+
+
+	char *trick[] = {"FF","FF","FF","FF"};
 	char trick_to_send[20];
 	for(int i =0; i<NPACK;i++) {
 		if (!i) {

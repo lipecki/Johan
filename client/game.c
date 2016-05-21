@@ -85,7 +85,7 @@ bool is_hundred(int score[]){
     for(int i = 0;i < 4;i++) if(score[i] >= 100) return true;
     return false;
 }
-void separate_strings(char *inputstring, const char *separators, char *fill_this_array_of_pointers[],int size_of_array_to_fill) {
+int separate_strings(char *inputstring, const char *separators, char *fill_this_array_of_pointers[],int size_of_array_to_fill) {
     //From strsep() manual:
     // The following uses strsep() to parse a string,
     // containing tokens delimited by *separators, into an argument vector:
@@ -94,7 +94,8 @@ void separate_strings(char *inputstring, const char *separators, char *fill_this
     string = strdup(inputstring);
 
     for (array_pointers = fill_this_array_of_pointers; (*array_pointers = strsep(&string, separators)) != NULL;)
-        if (**array_pointers != '\0') if (++array_pointers >= &fill_this_array_of_pointers[size_of_array_to_fill]) break;
+        if (**array_pointers != '\0') if (++array_pointers >= &fill_this_array_of_pointers[size_of_array_to_fill]) return 1;
+    return 0;
 }
 // Parses data into given list using given separator
 // Returns number of items parsed into list
@@ -115,7 +116,19 @@ int split(char *str,char separator,char *list[]) {
     }
     return i;
 }
-
+//Set 'char *list[4] values to "FF"
+void FF_trick(char *list[]){
+    for (int k = 0; k < 4; k++) {
+        list[k] = malloc(3);
+        memset(list[k], 'F', 2);
+    }
+}
+//Set 'char *hand[13] values to "FF"
+void FF_hand(char *hand[]){
+    int i =0;
+    while(i < 3) FF_trick(&hand[(i++)*4]);
+    FF_trick(&hand[9]);
+}
 
 
 

@@ -25,8 +25,10 @@ void print_list(FILE *,char *,int[],int);
 void is_twenty_six(int[]);
 bool is_hundred (int []);
 void update_round_score(int [], int[], int);
-void separate_strings(char *, const char *, char *[],int);
+int separate_strings(char *, const char *, char *[],int);
 int split(char *,char,char *[]);
+void FF_trick(char *[]);
+void FF_hand(char *[]);
 #endif
 
 
