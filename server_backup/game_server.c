@@ -12,7 +12,7 @@
 #include <pthread.h>
 #include <SDL_net.h>
 #include <SDL.h>
-#include "shuffle.h"
+#include "game.h"
 
 #define BUFLEN 512
 #define NPACK 4
@@ -24,7 +24,16 @@ void diep(char *s) {
 }
 // from UDP made simple at https://www.abc.se/~m6695/udp.html
 int main(void) {
-	
+	Card unshuffled_deck[52];
+	Card deck[52];
+	new_deck(unshuffled_deck);
+	shuffle_deck(unshuffled_deck, deck);
+	char **hands[4];
+
+	for(int i = 0; i < 4; i++){ 
+		hands[i] = malloc(3);
+		memcpy(hands[i], deck[(i*13)], 39);
+	}
 
 	struct sockaddr_in si_me, si_other;
 	int fd, s, i, len=13, slen=sizeof(si_other);
@@ -33,8 +42,8 @@ int main(void) {
 
 
 
-	char *hand[len];
-	FF_trick();
+	char *hand[13];
+	FF_trick(hand);
 
 
 	char *trick[] = {"FF","FF","FF","FF"};

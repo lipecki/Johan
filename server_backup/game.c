@@ -129,7 +129,7 @@ void FF_hand(char *hand[]){
     while(i < 3) FF_trick(&hand[(i++)*4]);
     FF_trick(&hand[9]);
 }
-void new_deck(Card_struct deck[])
+void new_deck(Card deck[])
 {
     int i=0;
     int j=0;
@@ -146,7 +146,7 @@ void new_deck(Card_struct deck[])
     }
 }
 
-void shuffle_deck(Card_struct deck[], Card_struct shuffled[])
+void shuffle_deck(Card deck[], Card shuffled[])
 {
     int i=0;
     int r;
@@ -170,7 +170,7 @@ void shuffle_deck(Card_struct deck[], Card_struct shuffled[])
     //shuffle klar
 }
 
-void print_deck(Card_struct deck[])
+void print_deck(Card deck[])
 {
     for(int i=0;i<52;i++)
     {

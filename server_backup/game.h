@@ -37,9 +37,9 @@ void separate_strings(char *, const char *, char *[],int);
 int split(char *,char,char *[]);
 void FF_trick(char *[]);
 void FF_hand(char *[]);
-void print_deck(Card_struct []);
-void shuffle_deck(Card_struct[],Card_struct[]);
-void new_deck(Card_struct []);
+void print_deck(Card []);
+void shuffle_deck(Card[],Card[]);
+void new_deck(Card []);
 #endif
 
 
