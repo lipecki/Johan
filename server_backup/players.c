@@ -8,47 +8,93 @@
 
 #include "players.h"
 
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 void* player_waits_or_plays (void *arguments) {
-        while (1) {
-                int my_turn = 1;
-                if (my_turn) {
-                }
-        }
-}
- UDPpacket createPacket(int cnl, uint8_t *data, int len, int maxlen, int status, IPaddress adr){
-         UDPpacket pkt;
-         pkt.channel = cnl;
-         pkt.data = data;
-         pkt.len = len;
-         pkt.maxlen = maxlen;
-         pkt.status = status;
-         pkt.address = adr;
-         return pkt;
- }
-int main(){
+    Player *me = (Player *) arguments;
+    char *player_hand[13];
+    memcpy(player_hand,me->game.hand,39);
 
-    pthread_t player[4]; //Some sort of array of players is needed
-    Player control_player[4];
-    int i=0;
-    int lock;
-    int round = 0;
+    while(1) {
+        pthread_mutex_lock(&mutex1);
 
-     2. Start simulation by starting the phil-threads and let the main program
-     print out the contents of the string table declared above. No thread is going
-     to communicate with the user but through the string table, it is the main
-     program that prints out the contents of the string table. This means that
-     we are separating the task of computation/simulation from the task of
-     presentation of the results*/
-/*
-
-    for(;i<4;i++) pthread_create(&player[i],NULL,player_waits_or_plays,control_player);
-    while(round<13)
-    {
-        printf("Round %2d: %s\n", round+1, hand);
-        sleep(1);
-        round++;
+        printf("\n I'm pos :%d\n", me->pos);
+        printf("My hand is: ");
+        for(int j=0;j<13;j++) printf("\t%s",me->game.hand[j]);
+        pthread_mutex_unlock(&mutex1);
+        sleep(3);
     }
+    pthread_exit(EXIT_SUCCESS);
+}
+/*
+int main(void) {
+    char *card = malloc(3);
+    strcpy(card, "FF");
+
+    int counter[4];
+    for(int i=0;i<4;i++){
+        counter[i] = i;
+    }
+
+    pthread_t players[4];
+    for(int i=0;i<4;i++){
+        pthread_t tmp=0;
+        players[i] = tmp;
+    }
+
+    Player player[4];
+    for(int i=0;i<4;i++){
+        Game game={{card},{card},{card},{card},{0},{0},{0}};
+        Player tmp={i,0,game};
+        memcpy(&player[i], (void *) &tmp, sizeof(tmp));
+    }
+
+
+    Game game={{card},{card},{card},{card},{0},{0},{0}};
+
+    for(int i=0;i<13;i++){
+        game.hand[i] = malloc(3);
+        memcpy(game.hand[i],card,3);
+    }
+    for(int i=0;i<4;i++){
+        memcpy(game.hands[i],game.hand,sizeof(game.hand));
+    }
+    printf("random hand: %s\n", game.hands[2][2]);
+
+    player[0].pos = 0;
+    player[0].game.hand[0]="FF";
+    //memcpy(player[0].game, game,1000);
+
+
+    char *hand[13] = {"00"};
+    char *hands[4][13] = {hand[0]};
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 13; j++) {
+            hand[j] = malloc(3);
+            sprintf(hand[j], "%x%x", i, j);
+        }
+        memcpy(hands[i], hand, 39);
+    }
+    int j=0;
+    printf("\nSpelare %d initierad!\n", player[j].pos);
+    counter[j++] = pthread_create(&players[j], NULL, &player_waits_or_plays, (void *) &player[j]);
+    printf("\nSpelare %d initierad!\n", player[j].pos);
+    counter[j++] = pthread_create(&players[j], NULL, &player_waits_or_plays, (void *) &player[j]);
+    printf("\nSpelare %d initierad!\n", player[j].pos);
+    counter[j++] = pthread_create(&players[j], NULL, &player_waits_or_plays, (void *) &player[j]);
+    printf("\nSpelare %d initierad!\n", player[j].pos);
+    counter[j++] = pthread_create(&players[j], NULL, &player_waits_or_plays, (void *) &player[j]);
+
+
+
+    int k=0;
+    pthread_join((players[k++]),NULL);
+    pthread_join((players[k++]),NULL);
+    pthread_join((players[k++]),NULL);
+    pthread_join((players[k++]),NULL);
+    return 0;
+}
+*/
     /* The above loop runs in parallel to the threads/phils that affect the
      common resource table.
      IMPORTANT: The synchronization must not be through one mutex! We must have
@@ -64,12 +110,8 @@ int main(){
      3. When the loop has finished, all the threads are joined to the main program
      and then the main program exits.
      return 0;
-*/
-                }
-        }
 }
-
-
+*/
 
 
 
