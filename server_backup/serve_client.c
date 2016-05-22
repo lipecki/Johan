@@ -30,16 +30,10 @@ int main(void) {
 	int fd, s, i, len=13, slen=sizeof(si_other);
 	fd = fopen("/var/tmp/serve_client","w");
 	char buf[BUFLEN]={"start"};
-
-
-
-	char *hand[len];
-	FF_trick();
-
-
-	char *trick[] = {"FF","FF","FF","FF"};
+	char *trick[4];
+	FF_trick(trick);
 	char trick_to_send[20];
-	for(int i =0; i<NPACK;i++) {
+	for(int i =0; i<4;i++) {
 		if (!i) {
 			strcpy(trick_to_send, trick[i]);
 			strcat(trick_to_send, ";");
