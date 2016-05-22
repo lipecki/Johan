@@ -13,14 +13,14 @@ pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 void* player_waits_or_plays (void *arguments) {
     Player *me = (Player *) arguments;
     char *player_hand[13];
-    memcpy(player_hand,me->game.hand,39);
+    //memcpy(player_hand,me->game.hand,39);
 
     while(1) {
         pthread_mutex_lock(&mutex1);
 
-        printf("\n I'm pos :%d\n", me->pos);
-        printf("My hand is: ");
-        for(int j=0;j<13;j++) printf("\t%s",me->game.hand[j]);
+        printf("\nI'm pos :%d\n", me->pos);
+        printf("My hand is: \n");
+        for(int j=0;j<52;j+=4) printf("\t%s",me->game->deck[me->pos+j]);
         pthread_mutex_unlock(&mutex1);
         sleep(3);
     }
@@ -30,6 +30,15 @@ void* player_waits_or_plays (void *arguments) {
 int main(void) {
     char *card = malloc(3);
     strcpy(card, "FF");
+
+    Card sorted_deck[52];
+    Card shuffled_deck[52];
+    char *deck[52];
+    new_deck(sorted_deck);
+    shuffle_deck(sorted_deck,shuffled_deck);
+    convert_card_struct(shuffled_deck,deck);
+    Game *game = malloc(sizeof(Game));
+    memcpy(game->deck,deck,sizeof(deck));
 
     int counter[4];
     for(int i=0;i<4;i++){
@@ -41,40 +50,13 @@ int main(void) {
         pthread_t tmp=0;
         players[i] = tmp;
     }
-
+    //Player thread arguments are initiated
     Player player[4];
     for(int i=0;i<4;i++){
-        Game game={{card},{card},{card},{card},{0},{0},{0}};
         Player tmp={i,0,game};
         memcpy(&player[i], (void *) &tmp, sizeof(tmp));
     }
 
-
-    Game game={{card},{card},{card},{card},{0},{0},{0}};
-
-    for(int i=0;i<13;i++){
-        game.hand[i] = malloc(3);
-        memcpy(game.hand[i],card,3);
-    }
-    for(int i=0;i<4;i++){
-        memcpy(game.hands[i],game.hand,sizeof(game.hand));
-    }
-    printf("random hand: %s\n", game.hands[2][2]);
-
-    player[0].pos = 0;
-    player[0].game.hand[0]="FF";
-    //memcpy(player[0].game, game,1000);
-
-
-    char *hand[13] = {"00"};
-    char *hands[4][13] = {hand[0]};
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 13; j++) {
-            hand[j] = malloc(3);
-            sprintf(hand[j], "%x%x", i, j);
-        }
-        memcpy(hands[i], hand, 39);
-    }
     int j=0;
     printf("\nSpelare %d initierad!\n", player[j].pos);
     counter[j++] = pthread_create(&players[j], NULL, &player_waits_or_plays, (void *) &player[j]);

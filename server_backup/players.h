@@ -35,7 +35,7 @@ struct player_parms;
 typedef struct player_parms{
     int pos;
     int id;
-    Game game;
+    Game *game;
 }Player;
 
 
