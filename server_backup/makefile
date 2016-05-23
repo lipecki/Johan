@@ -1,4 +1,4 @@
-all: clean account.o encrypt.o InetS3.o port_hearts.o players.o game.o serve_client.o serve_client game_server.o game_server InetS3
+all: clean account.o encrypt.o InetS3.o port_hearts.o players.o game.o serve_client.o serve_client game_server.o game_server #gameserver.o gameserver InetS3
 
 clean:
 	rm -f *.o
@@ -14,7 +14,7 @@ account.o:
 encrypt.o:
 	$(CC) -std=c99 -c -lmcrypt encrypt.c
 
-game_server.o:
+gameserver.o:
 	$(CC) -c `sdl2-config --cflags` `mysql_config --cflags --libs` gameserver.c
 
 players.o:
@@ -23,7 +23,7 @@ players.o:
 game.o:
 	$(CC) -c game.c
 
-game_server:
+gameserver:
 	$(CC) -o game_server game_server.o encrypt.o account.o players.o game.o `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -lpthread
 
 port_hearts.o:
@@ -40,5 +40,11 @@ serve_client.o:
 
 serve_client:
 	$(CC) -o serve_client serve_client.o
+
+game_server.o:
+	$(CC) -c  $(SDL_FLAGS) `mysql_config --cflags --libs` -lmysqlclient -lSDL2_net game_server.c
+
+game_game:
+	$(CC) -o game_server game_server.o
 
 
