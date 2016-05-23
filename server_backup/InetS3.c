@@ -69,7 +69,7 @@ int main(int argc,char const *argv[])
         char gamelog[40];
         int port;
 
-        struct sigaction sa = malloc(sizeof(sigaction));
+        struct sigaction sa = malloc(sizeof(struct sigaction));
         sa.sa_handler = sigchld_handlr; // reap all dead processes
         sigemptyset(&sa.sa_mask);
         sa.sa_flags = SA_RESTART;

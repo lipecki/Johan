@@ -30,10 +30,10 @@ port_hearts.o:
 	$(CC] -c `mysql_config --cflags --libs` port_hearts.c
 
 InetS3.o:
-	$(CC) -c InetS3.c `mysql_config --cflags --libs` -lmysqlclient
+	gcc -c InetS3.c `mysql_config --cflags --libs` -lmysqlclient
 
 InetS3:
-	$(CC) -o InetS3 port_hearts.o InetS3.o account.o encrypt.o game.o -lmysqlclient -lmcrypt
+	gcc -o InetS3 port_hearts.o InetS3.o account.o encrypt.o game.o -lmysqlclient -lmcrypt
 
 serve_client.o:
 	$(CC) -c  $(SDL_FLAGS) `mysql_config --cflags --libs` -lmysqlclient -lSDL2_net serve_client.c
