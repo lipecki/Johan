@@ -36,15 +36,15 @@ InetS3:
 	gcc -o InetS3 port_hearts.o InetS3.o account.o encrypt.o game.o -lmysqlclient -lmcrypt
 
 serve_client.o:
-	$(CC) -c  $(SDL_FLAGS) `mysql_config --cflags --libs` -lmysqlclient -lSDL2_net serve_client.c
+	$(CC) -c `mysql_config --cflags --libs` -lmysqlclient serve_client.c
 
 serve_client:
 	$(CC) -o serve_client serve_client.o
 
 game_server.o:
-	$(CC) -c  $(SDL_FLAGS) `mysql_config --cflags --libs` -lmysqlclient -lSDL2_net game_server.c
+	$(CC) -c `mysql_config --cflags --libs` -lmysqlclient game_server.c
 
-game_game: 
+game_server:
 	$(CC) -o game_server game_server.o
 
 
