@@ -1,4 +1,4 @@
-all: clean account.o encrypt.o InetS3.o port_hearts.o players.o game.o serve_client.o serve_client game_server.o game_server #gameserver.o gameserver InetS3
+all: clean account.o encrypt.o InetS3.o port_hearts.o players.o game.o serve_client.o serve_client game_server.o game_server # gameserver.o gameserver InetS3
 
 clean:
 	rm -f *.o
@@ -29,14 +29,14 @@ gameserver:
 port_hearts.o:
 	$(CC] -c `mysql_config --cflags --libs` port_hearts.c
 
-InetS3.o:
-	gcc -c InetS3.c `mysql_config --cflags --libs` -lmysqlclient
+#InetS3.o:
+#	gcc -c InetS3.c `mysql_config --cflags --libs` -lmysqlclient
 
-InetS3:
-	gcc -o InetS3 port_hearts.o InetS3.o account.o encrypt.o game.o -lmysqlclient -lmcrypt
+#InetS3:
+#	gcc -o InetS3 port_hearts.o InetS3.o account.o encrypt.o game.o -lmysqlclient -lmcrypt
 
 serve_client.o:
-	$(CC) -c `mysql_config --cflags --libs` -lmysqlclient serve_client.c
+	$(CC) -c -pthread `mysql_config --cflags --libs` -lmysqlclient - pthread serve_client.c
 
 serve_client:
 	$(CC) -o serve_client serve_client.o
