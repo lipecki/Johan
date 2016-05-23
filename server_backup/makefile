@@ -24,7 +24,7 @@ game.o:
 	$(CC) -c game.c
 
 gameserver:
-	$(CC) -o game_server game_server.o encrypt.o account.o players.o game.o `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -lpthread
+	$(CC) -o -pthread game_server game_server.o encrypt.o account.o players.o game.o `sdl2-config --libs` `mysql_config --libs` -lSDL2_net -lmysqlclient -lmcrypt -pthread
 
 port_hearts.o:
 	$(CC] -c `mysql_config --cflags --libs` port_hearts.c
@@ -44,7 +44,7 @@ serve_client:
 game_server.o:
 	$(CC) -c  $(SDL_FLAGS) `mysql_config --cflags --libs` -lmysqlclient -lSDL2_net game_server.c
 
-game_game:
+game_game: 
 	$(CC) -o game_server game_server.o
 
 
