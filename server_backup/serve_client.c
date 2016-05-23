@@ -10,9 +10,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include <SDL_net.h>
-#include <SDL.h>
-#include "shuffle.h"
+#include "game.h"
+#include "players.h"
 
 #define BUFLEN 512
 #define NPACK 4
@@ -27,7 +26,10 @@ int main(void) {
 	
 
 	struct sockaddr_in si_me, si_other;
-	int fd, s, i, len=13, slen=sizeof(si_other);
+	int s, i;
+	ssize_t len;
+	socklen_t slen=sizeof(si_other);
+	FILE *fd;
 	fd = fopen("/var/tmp/serve_client","w");
 	char buf[BUFLEN]={"start"};
 	char *trick[4];
@@ -59,11 +61,11 @@ int main(void) {
 		printf("buffer: %s \n",buf);
 		if ((len=recvfrom(s, buffer, BUFLEN, 0, &si_other, &slen))==-1) diep("recvfrom()");
 		printf("Received packet from %s:%d\nData: %s\nLength: %d\n",
-		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buffer,len);
+		       inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), (char *) buffer,(int) len);
 		for (i=3; i<NPACK; i++) {
 			printf("Sending packet %s\n", trick[i]);
 			sprintf(buf, "This is packet %d\n", i);
-			if (sendto(s, (char *) trick_to_send, BUFLEN, 0, &si_other, slen)==-1)
+			if (sendto(s, (char *) trick_to_send, BUFLEN, 0, &si_other,  slen)==-1)
 				diep("sendto()");
 			}
 	}

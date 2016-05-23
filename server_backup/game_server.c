@@ -10,8 +10,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include <SDL_net.h>
-#include <SDL.h>
 #include "game.h"
 
 #define BUFLEN 512
