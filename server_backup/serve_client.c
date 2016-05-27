@@ -44,7 +44,7 @@ int main(void) {
 			strcat(trick_to_send,trick[i]);
 			strcat(trick_to_send,";");
 		}
-		fprintf(fd,"done with trick!\n");
+		printf(fd,"done with trick!\n");
 	}
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
 		diep("socket");

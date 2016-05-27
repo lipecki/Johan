@@ -8,7 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2_net/SDL_net.h>
 
-#define PORT 1337
+#define PORT 80
 #define MAXLEN 1024
 #define IP_ADDRESS "130.237.84.89"
 #define GAME_CLIENT "game_client "

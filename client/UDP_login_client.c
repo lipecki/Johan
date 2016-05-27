@@ -13,21 +13,33 @@
 #define PORT 41337
 #define MAXLEN 1024
 #define IP_ADDRESS "130.237.84.89"
+#define IP_ADDRESS "127.0.0.1"
 #define GAME_CLIENT "game_client "
 #define LOGIN_LOG "/var/tmp/udp_log"
 #define EXPECTED_RESPONSE "diamonds"
 #define USER_DATA "Grupp7;password"
 #define SERVER_REPLY "41337;1"
 
-void login(char [],char []);
 int main(int argc,char *argv[]) {
+    //int my_pos= (int) argv[2];
+    int my_pos=2;
+    char *trick[4];
+    DD_trick(trick,my_pos);
+
+    //DD_trick(trick,my_pos);
+    printf("trick: ");
+    for(int i=0;i<4;i++) printf(" %s",trick[i]);
     IPaddress ip;
     UDPsocket sd;
     UDPpacket udPpacket;
     char server_ip[25] = "", log_string[40], pid[7];
-    udPpacket.data = (Uint8 *) strdup("you rule!");
-    printf("packet: %s\n", udPpacket.data);
-    udPpacket.len = 512;
+    udPpacket.data = (Uint8 *) strdup("");
+    for(int i=0;i<4;i++) {
+        strcat(udPpacket.data, (Uint8 *) trick[i]);
+        strcat(udPpacket.data,";");
+    }
+    printf("\npacket: %s\n", udPpacket.data);
+    udPpacket.len = 13;
     int result, len, len2;
     uint16_t port;
     FILE *fd;
@@ -47,11 +59,14 @@ int main(int argc,char *argv[]) {
     }
 
     if (!(sd = SDLNet_UDP_Open(0))) {
-        fprintf(fd, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+        fprintf(fd, "SDLNet_UDP_Open: %s\n", SDLNet_GetError());
         exit(EXIT_FAILURE);
     }
     fd = fopen(log_string, "a+");
-    fprintf(fd, "socket %d open\n", fd);
+    printf("UDPsocket open\n");
+    fclose(fd);
+
+    // värdet
 
     //IPaddress *address;
     int channel, chanL;
@@ -60,7 +75,7 @@ int main(int argc,char *argv[]) {
     if (channel == -1) {
         fd = fopen(log_string,"a+");
         fprintf(fd,"SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
-        close(fd);
+        fclose(fd);
         // do something because we failed to bind
     }
     else    printf("bound to channel %d\n",channel);
@@ -77,8 +92,6 @@ int main(int argc,char *argv[]) {
         // create a new UDPpacket to hold 1024 bytes of data
         UDPpacket *packet;
         packet=SDLNet_AllocPacket(1024);
-        char *array_of_pointers[20];
-        char *tmp;
         if(!packet) {
             printf("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
             sleep(2);
@@ -89,35 +102,21 @@ int main(int argc,char *argv[]) {
             // do stuff with this new packet
             result=SDLNet_UDP_Recv(sd, packet);
             if(result) {
+
                 printf("Received packet data: %s\n", (char *) packet->data);
 
-                tmp = (char *) packet->data;
-
-                split((char *) packet->data, ';', array_of_pointers);
-                printf("Split data: ");
-                while (i < 4) printf("%s ", array_of_pointers[i++]);
-                printf("\n");
-                i = 0;
                 fd = fopen(log_string, "a+");
-                fprintf(fd, "Emottaget: %s\n", packet->data);
+                printf("Emottaget: %s\n", packet->data);
                 fclose(fd);
                 sleep(2);
                 // SDLNet_FreePacket this packet when finished with it
                 SDLNet_FreePacket(packet);
             }
         }
+        sleep(2);
 
     }
 
     return 0;
-}
-void login(char user_name[],char password[]){
-    printf("Ange användarnamn: \n");
-    fgets(user_name, sizeof(user_name)+1,stdin);
-    user_name[strlen(user_name)-1]=';';
-    printf("Ange lösenord: \n");
-    fgets(password, sizeof(password)+1,stdin);
-    password[strlen(password)-1]='\0';
-    strcat(user_name,password);
 }
 
