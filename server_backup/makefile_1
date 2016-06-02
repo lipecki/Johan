@@ -14,10 +14,10 @@ DEPS = game.h players.h
 serve_client: serve_client.o game.o players.o
 	$(CC) -o serve_client serve_client.o game.o players.o -lpthread
 
-players.o: players.c players.h
+players.o: players.c
 	$(CC) -c players.c -lpthread
 
-game.o: game.c game.h
+game.o: game.c
 	$(CC) -c game.c
 
 serve_client.o: serve_client.c

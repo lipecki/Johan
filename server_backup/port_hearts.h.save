@@ -50,7 +50,6 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <time.h>
-//#include "account.h"
 
 // Generates a 32 char length (33 with \0) GUID and stores it in "guid"
 int getGuid(char guid[]);

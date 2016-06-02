@@ -15,9 +15,10 @@
 #include <pwd.h>
 #include <signal.h>
 #include <netdb.h>
+//#include <mysql.h>
 #include <arpa/inet.h>
 #include "port_hearts.h"
-#include "account.h"
+//#include "account.h"
 
 int main(int argc,char const *argv[])
 {
