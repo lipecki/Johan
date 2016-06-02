@@ -12,17 +12,17 @@
 #define MESSAGE "# This is the gamelog for the card game Hearts, \n# developed for the network communications course at KTH Haninge, spring term 2016"
 #define PORT 41337
 #define MAXLEN 1024
-#define IP_ADDRESS "130.237.84.89"
+//#define IP_ADDRESS "130.237.84.89"
 #define IP_ADDRESS "127.0.0.1"
 #define GAME_CLIENT "game_client "
-#define LOGIN_LOG "/var/tmp/udp_log"
+#define LOGIN_LOG "tmp/udp_log"
 #define EXPECTED_RESPONSE "diamonds"
 #define USER_DATA "Grupp7;password"
 #define SERVER_REPLY "41337;1"
 
 int main(int argc,char *argv[]) {
     //int my_pos= (int) argv[2];
-    int my_pos=2;
+    int my_pos=0;
     char *trick[4];
     DD_trick(trick,my_pos);
 
@@ -47,9 +47,10 @@ int main(int argc,char *argv[]) {
     sprintf(pid, ".%d", getpid());
     strcpy(log_string, LOGIN_LOG);
     strcat(log_string, pid);
-    fd = fopen(log_string, "w+");
-    fprintf(fd, "%s\n",MESSAGE);
-    fclose(fd);
+    printf("%s\n",log_string);
+    //fd = fopen(log_string, "w+");
+    // fprintf(fd, "%s\n",MESSAGE);
+    //fclose(fd);
     strcpy(server_ip, IP_ADDRESS);
     //port = (uint16_t) atoi(argv[1]);
     port = PORT;

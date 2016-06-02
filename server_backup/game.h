@@ -41,7 +41,7 @@ bool is_two_of_clubs(char []);
 bool do_I_start(char* []);
 // given a list of four hands, who_starts returns the player position
 // of the hand with the two of clubs
-int who_starts(char **[4]);
+int who_starts(char *[4][13]);
 // given the trick winner(arg 1) and the trick score (arg 2)
 // the array of scores for the hand (arg 0)
 // is updated with the trick score. (pos 0 = player 0 score).
@@ -71,6 +71,7 @@ void FF_hand(char *[]);
 void print_deck(Card []);
 void shuffle_deck(Card [],Card []);
 int find_DD(char *[],int);
+void EE_trick(char *[],int);
 #endif
 
 

@@ -75,7 +75,7 @@ void is_twenty_six(int hand_score[],int len){
 }
 //Checks which player holds two of clubs (i.e. has card "00")
 //Returns an integer with the player position
-int who_starts(char **player_hands[4]){
+int who_starts(char *player_hands[4][13]){
     for(int i=0;i<4;i++) {
         if(do_I_start(player_hands[i])) return i;
     }
@@ -115,19 +115,6 @@ int split(char *str,char separator,char *list[]) {
         string = &string[index + 1];
     }
     return i;
-}
-//Set 'char *list[4] values to "FF"
-void FF_trick(char *list[]){
-    for (int k = 0; k < 4; k++) {
-        list[k] = malloc(3);
-        memset(list[k], 'F', 2);
-    }
-}
-//Set 'char *hand[13] values to "FF"
-void FF_hand(char *hand[]){
-    int i =0;
-    while(i < 3) FF_trick(&hand[(i++)*4]);
-    FF_trick(&hand[9]);
 }
 void new_deck(Card deck[])
 {
@@ -221,6 +208,27 @@ void compile_send_string(char *array[],char string[],int length){
 int find_DD(char *str[],int len){
     for (int i = 0; i < len; i++) if(!(strcmp(str[i],"DD"))) return i;
     return -1;
+}
+void EE_trick(char *list[],int pos){
+    for(int i=0;i<4;i++){
+        list[i] = malloc(3);
+        if(i==pos) memset(list[i], 'E', 2);
+        else memset(list[i], 'F', 2);
+        strcat(list[i],"");
+    }
+}
+//Set 'char *list[4] values to "FF"
+void FF_trick(char *list[]){
+    for (int k = 0; k < 4; k++) {
+        list[k] = malloc(3);
+        memset(list[k], 'F', 2);
+    }
+}
+//Set 'char *hand[13] values to "FF"
+void FF_hand(char *hand[]){
+    int i =0;
+    while(i < 3) FF_trick(&hand[(i++)*4]);
+    FF_trick(&hand[9]);
 }
 
 
