@@ -5,8 +5,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include "game.h"
-#include "SDL2/SDL_net.h"
-#include "SDL2/SDL.h"
+#include <SDL2/SDL_net.h>
+#include <SDL2/SDL.h>
 
 #define PORT 1337
 #define MAXLEN 1024
