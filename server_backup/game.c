@@ -214,7 +214,7 @@ void EE_trick(char *list[],int pos){
         list[i] = malloc(3);
         if(i==pos) memset(list[i], 'E', 2);
         else memset(list[i], 'F', 2);
-        strcat(list[i],"");
+        list[i][2]='\0';
     }
 }
 //Set 'char *list[4] values to "FF"
@@ -222,6 +222,7 @@ void FF_trick(char *list[]){
     for (int k = 0; k < 4; k++) {
         list[k] = malloc(3);
         memset(list[k], 'F', 2);
+        list[k][2]='\0';
     }
 }
 //Set 'char *hand[13] values to "FF"

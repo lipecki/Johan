@@ -6,6 +6,8 @@
 //  Copyright © 2016 Johan Lipecki. All rights reserved.
 //
 
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "players.h"
 
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
@@ -20,33 +22,27 @@ void* player_waits_or_plays (void *arguments) {
     //memcpy(player_hand,me->game.hand,39);
 
     char trick_to_send[20];
-    int i =0, slen=sizeof(me->si_other);
+    int i =0;
+    socklen_t slen=sizeof(struct sockaddr_in);
     while(i < 2) {
         pthread_mutex_lock(&mutex1);
         char *tmp[200];
         printf("\nI'm pos :%d\n", me->pos);
-        printf("My hand is: %s\n",me->game->buffer);
-        len = (int) sizeof(me->game->buffer);
-        printf("client buffer: %s\n,len: %d\n socket: %d",me->game->buffer,len,*(me->sockfd));
-        memcpy(tmp,me->game->buffer,strlen(me->game->buffer));
+        printf("My hand is: %s\n",me->game->buffer[me->pos]);
+        len =sizeof(me->game->hands[me->pos]);
+        printf("client buffer: %s\n,len: %d\n ip-address: %s",me->game->buffer[me->pos],len, inet_ntoa(me->si_other->sin_addr));
 
-        if (sendto(*(me->sockfd),
-                   (char *) tmp,
-                   (len*13), 0,
+        if (sendto(*(me->sockfd),(void *) me->game->buffer[me->pos],
+                   (size_t) sizeof(me->game->buffer[me->pos]), 0,
                    (const struct sockaddr *) me->si_other,
-                   (socklen_t) slen)==-1)
+                   slen)==-1)
             perror("sendto() FAILED");
-        sprintf(cards_to_send,"%s;",me->game->deck[me->pos]);
-        for(int j=4;j<52;j+=4) {
-            strcat(cards_to_send, me->game->deck[me->pos + j]);
-            strcat(cards_to_send,";");
-        }
-        if (sendto(me->sockfd, cards_to_send, (size_t) (len * 13), 0, (const struct sockaddr *) me->si_other, (socklen_t) slen) == -1)
-        printf("collected hand: %s\n",cards_to_send);
-        pthread_mutex_unlock(&mutex1);
-        sleep(3);
         i++;
-    }
+        }
+    //if (sendto(me->sockfd, cards_to_send, (size_t) (len * 13), 0, (const struct sockaddr *) me->si_other, (socklen_t) slen) == -1)
+    pthread_mutex_unlock(&mutex1);
+    sleep(3);
+
     pthread_exit(EXIT_SUCCESS);
 }
 int Initiate_players() {

@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
 	for (int k = 0; k < 4; k++) memcpy(game->buffer[k],buf, sizeof(buf));
 	for (int k = 0; k < 4; k++) printf("Shuffled deck: \n%s\n\n",game->buffer[k]);
 
+	//get communication going
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
 		diep("socket");
 	printf("socket open\n");
@@ -55,7 +56,7 @@ int main(int argc, char *argv[]) {
 	si_me.sin_family = AF_INET;
 	si_me.sin_port = htons(GAMEPORT);
 	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
-	if (bind(s, &si_me, sizeof(si_me))==-1)
+	if (bind(s, (struct sockaddr *) &si_me, sizeof(si_me))==-1)
 		diep("bind");
 	printf("bound\n");
 
@@ -115,7 +116,6 @@ int main(int argc, char *argv[]) {
 		       inet_ntoa(player[j].si_other->sin_addr),
 				 player[j].sockfd);
 		if((len = recvfrom(s, buffer, BUFLEN, 0, &si_oth, &slen)) == -1) diep("recvfrom()");
-		printf("from addr: %d\n",si_oth.sin_addr.s_addr);
 
 		//check given position
 		separate_strings(buffer,";",this_is_my_pos,4);
@@ -123,11 +123,15 @@ int main(int argc, char *argv[]) {
 		if(j < 4 && j >= 0 && !connections[j]){
 			//In preparation for threads
 			sockFd[j]= s;
-			player[j].sockfd = sockFd[j];
+			player[j].sockfd = &sockFd[j];
 			strcpy(si_other[j].sin_zero,si_oth.sin_zero);
 			si_other[j].sin_addr.s_addr=si_oth.sin_addr.s_addr;
 			si_other[j].sin_port=si_oth.sin_port;
 			si_other[j].sin_family=si_oth.sin_family;
+			player[j].si_other = &si_other[j];
+
+			printf("pthread to addr: %d\n",si_oth.sin_addr.s_addr);
+			//pthread_create(&players[j],NULL,&player_waits_or_plays,(void *) &player[j]);
 
 			//Signal that four clients are connected
 			connections[j]=true;
@@ -170,16 +174,45 @@ int main(int argc, char *argv[]) {
 	}
 	for (int k = 0; k < 4; k++)printf("Player %d game buffer: %s\n",k,player[k].game->buffer[k]);
 
+	for (int l = 0; l < 4; l++) {
+		if ((len = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1)
+			diep("recvfrom()");
+		if (si_other[l].sin_addr.s_addr == si_oth.sin_addr.s_addr) {
+			if (sendto(s, game->buffer[l], sizeof(game->buffer[l]), 0, (struct sockaddr *) &si_other[l],
+				   slen) == -1)
+				diep("sendto()");
+			printf("Skickar %s till spelare %d\n",game->buffer[l], player[l].pos);
+		}
+	}
+
 	/*for (int l = 0; l < 4; l) {
 		if((len = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
 	}*/
-	if((len = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
-	printf("from addr: %d\n",si_oth.sin_addr.s_addr);
-	for (int l = 0; l < 4; l++) {
-		if(si_other[l].sin_addr.s_addr==si_oth.sin_addr.s_addr)
-			if (sendto(s, game->buffer[l], sizeof(game->buffer[l]), 0, (struct sockaddr *) &si_other[l],  slen)==-1) diep("sendto()");
+	int o=0;
+	while(o<12){
+		if((len = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
+		printf("from addr: %d\n",si_oth.sin_addr.s_addr);
+		for (int m = 0; m < 4; m++) {
+			sprintf(player[m].game->buffer[m], "%s;", buffer);
+			printf("Buffer written: %s\n", buffer);
+		}
+		if ((strstr(buffer,"00"))) {
+			for (int l = 0; l < 4; l++) {
+				if (si_other[l].sin_addr.s_addr == si_oth.sin_addr.s_addr) {
+					if (sendto(s, game->buffer[l], sizeof(game->buffer[l]), 0,
+						   (struct sockaddr *) &si_other[l],
+						   slen) == -1)
+						diep("sendto()");
+					printf("Skickar %s till spelare %d\n", buffer, player[l].pos);
+					//pthread_create(&players[l], NULL, &player_waits_or_plays, (void *) &player[l]);
+				}
 
+			}
+			break;
+		}
+		o++;
 	}
+
 
 
 	// Jag räknar med att klienten ställer frågor om sticket
@@ -202,7 +235,7 @@ int main(int argc, char *argv[]) {
 
 	printf("\nclient data: %s \n",buffer);
 	separate_strings(buffer,";",trick,4);
-	printf("received split into: %s ",trick[0]);
+	printf("received split into: %s",trick[0]);
 	for(int i=1;i<4;i++) printf(" %s",trick[i]);
 	printf("\n");
 	/*	//Receive data and start game threads for each client

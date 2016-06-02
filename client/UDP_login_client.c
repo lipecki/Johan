@@ -15,7 +15,7 @@
 //#define IP_ADDRESS "130.237.84.89"
 #define IP_ADDRESS "127.0.0.1"
 #define GAME_CLIENT "game_client "
-#define LOGIN_LOG "tmp/udp_log"
+#define LOGIN_LOG "udp_log"
 #define EXPECTED_RESPONSE "diamonds"
 #define USER_DATA "Grupp7;password"
 #define SERVER_REPLY "41337;1"
@@ -23,7 +23,9 @@
 int main(int argc,char *argv[]) {
     //int my_pos= (int) argv[2];
     int my_pos=0;
-    char *trick[4];
+    char *trick[13];
+    char *buffer;
+    buffer = malloc(150);
     DD_trick(trick,my_pos);
 
     //DD_trick(trick,my_pos);
@@ -32,7 +34,7 @@ int main(int argc,char *argv[]) {
     IPaddress ip;
     UDPsocket sd;
     UDPpacket udPpacket;
-    char server_ip[25] = "", log_string[40], pid[7];
+    char server_ip[25] = {'\0'}, log_string[40], pid[7];
     udPpacket.data = (Uint8 *) strdup("");
     for(int i=0;i<4;i++) {
         strcat(udPpacket.data, (Uint8 *) trick[i]);
@@ -55,16 +57,16 @@ int main(int argc,char *argv[]) {
     //port = (uint16_t) atoi(argv[1]);
     port = PORT;
     if (SDLNet_ResolveHost(&ip, server_ip, port) < 0) {
-        fprintf(fd, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+        printf( "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         exit(EXIT_FAILURE);
     }
 
     if (!(sd = SDLNet_UDP_Open(0))) {
-        fprintf(fd, "SDLNet_UDP_Open: %s\n", SDLNet_GetError());
+        printf( "SDLNet_UDP_Open: %s\n", SDLNet_GetError());
         exit(EXIT_FAILURE);
     }
     fd = fopen(log_string, "a+");
-    printf("UDPsocket open\n");
+    fprintf(fd,"UDPsocket open\n");
     fclose(fd);
 
     // värdet
@@ -82,6 +84,7 @@ int main(int argc,char *argv[]) {
     else    printf("bound to channel %d\n",channel);
     int i = 0;
     while ((len=SDLNet_UDP_Send(sd, channel, &udPpacket))){
+        //SDLNet_FreePacket(&udPpacket);
         if (len< 0) {
             if (i++ > 1) break;
             printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
@@ -91,8 +94,9 @@ int main(int argc,char *argv[]) {
             // this may just be because no addresses are bound to the channel...
         }
         // create a new UDPpacket to hold 1024 bytes of data
-        UDPpacket *packet;
+        UDPpacket *packet,*answer;
         packet=SDLNet_AllocPacket(1024);
+        answer=SDLNet_AllocPacket(1024);
         if(!packet) {
             printf("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
             sleep(2);
@@ -105,9 +109,30 @@ int main(int argc,char *argv[]) {
             if(result) {
 
                 printf("Received packet data: %s\n", (char *) packet->data);
+                strcpy(buffer,(char *) packet->data);
+                split(buffer,';',trick);
+                for (int j = 0; j < 4; j++) {
+                    if(!(strcmp(trick[j],"EE"))) {
+                        printf("player %d starts\n", j);
+                        if(j == my_pos) {
+                            strcpy(trick[j], "00");
+                            printf("changed trick pos %d to: %s",j,trick[j]);
+                            answer->data = (Uint8 *) strdup("");
+                            for(int n=0;n<4;n++) {
+                                strcat(answer->data, (Uint8 *) trick[n]);
+                                strcat(answer->data,";");
+                            }
+                            printf("\npacket: %s\n", answer->data);
+                            answer->len = 13;
+                            if ((len=SDLNet_UDP_Send(sd, channel, answer))) break;
+                        }
+
+                    }
+                }
 
                 fd = fopen(log_string, "a+");
                 printf("Emottaget: %s\n", packet->data);
+
                 fclose(fd);
                 sleep(2);
                 // SDLNet_FreePacket this packet when finished with it
