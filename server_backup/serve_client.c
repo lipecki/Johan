@@ -189,14 +189,14 @@ int main(int argc, char *argv[]) {
 		if((len = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
 	}*/
 	int o=0;
-	while(o<12){
+	do{
 		if((len = recvfrom(s, buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
 		printf("from addr: %d\n",si_oth.sin_addr.s_addr);
-		for (int m = 0; m < 4; m++) {
-			sprintf(player[m].game->buffer[m], "%s;", buffer);
-			printf("Buffer written: %s\n", buffer);
-		}
 		if ((strstr(buffer,"00"))) {
+			for (int m = 0; m < 4; m++) {
+				sprintf(player[m].game->buffer[m], "%s;", buffer);
+				printf("Buffer written: %s\n", buffer);
+			}
 			for (int l = 0; l < 4; l++) {
 				if (si_other[l].sin_addr.s_addr == si_oth.sin_addr.s_addr) {
 					if (sendto(s, game->buffer[l], sizeof(game->buffer[l]), 0,
@@ -208,11 +208,22 @@ int main(int argc, char *argv[]) {
 				}
 
 			}
-			break;
 		}
-		o++;
+	} while (!(strstr(buffer,"00")));
+	void *new_buffer;
+	new_buffer = malloc(40);
+	// så länge första handen spelas vill vi jämföra skickade händer med mottagna händer
+	while(strstr(buffer, "00") && strstr(buffer,"FF")){
+		if((len = recvfrom(s, new_buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
+		if((strcmp((char *) buffer, (char *) new_buffer))) {
+			for (int l = 0; l < 4; l++) {
+				strcpy(game->buffer[l],new_buffer);
+				if (sendto(s, game->buffer[l], sizeof(game->buffer[l]), 0,
+					   (struct sockaddr *) &si_other[l], slen) == -1)
+					diep("sendto()");
+			}
+		}
 	}
-
 
 
 	// Jag räknar med att klienten ställer frågor om sticket
