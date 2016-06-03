@@ -50,9 +50,9 @@ int main(int argc,char *argv[]) {
     strcpy(log_string, LOGIN_LOG);
     strcat(log_string, pid);
     printf("%s\n",log_string);
-    //fd = fopen(log_string, "w+");
-    // fprintf(fd, "%s\n",MESSAGE);
-    //fclose(fd);
+    fd = fopen(log_string, "w+");
+    fprintf(fd, "%s\n",MESSAGE);
+    fclose(fd);
     strcpy(server_ip, IP_ADDRESS);
     //port = (uint16_t) atoi(argv[1]);
     port = PORT;
@@ -98,7 +98,9 @@ int main(int argc,char *argv[]) {
         packet=SDLNet_AllocPacket(1024);
         answer=SDLNet_AllocPacket(1024);
         if(!packet) {
-            printf("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
+            fd = fopen(log_string, "a+");
+            fprintf(fd,"SDLNet_AllocPacket: %s\n", SDLNet_GetError());
+            fclose(fd);
             sleep(2);
             continue;
 
@@ -138,6 +140,7 @@ int main(int argc,char *argv[]) {
                 // SDLNet_FreePacket this packet when finished with it
                 SDLNet_FreePacket(packet);
             }
+            memcpy(&udPpacket,answer, sizeof(UDPpacket));
         }
         sleep(2);
 
