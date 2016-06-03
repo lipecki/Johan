@@ -22,7 +22,7 @@
 
 int main(int argc,char *argv[]) {
     //int my_pos= (int) argv[2];
-    int my_pos=0;
+    int my_pos=3;
     char *trick[13];
     char *buffer;
     buffer = malloc(150);
@@ -126,6 +126,7 @@ int main(int argc,char *argv[]) {
                             }
                             printf("\npacket: %s\n", answer->data);
                             answer->len = 13;
+                            memcpy(&udPpacket,answer, sizeof(UDPpacket));
                             if ((len=SDLNet_UDP_Send(sd, channel, answer))) break;
                         }
 
@@ -140,7 +141,7 @@ int main(int argc,char *argv[]) {
                 // SDLNet_FreePacket this packet when finished with it
                 SDLNet_FreePacket(packet);
             }
-            memcpy(&udPpacket,answer, sizeof(UDPpacket));
+
         }
         sleep(2);
 
