@@ -217,7 +217,7 @@ int main(int argc, char *argv[]) {
 		if((len = recvfrom(s, new_buffer, BUFLEN, 0, (struct sockaddr *) &si_oth, &slen)) == -1) diep("recvfrom()");
 		if((strcmp((char *) buffer, (char *) new_buffer))) {
 			for (int l = 0; l < 4; l++) {
-				strcpy(game->buffer[l],new_buffer);
+				strcpy(game->buffer[l],buffer);
 				if (sendto(s, game->buffer[l], sizeof(game->buffer[l]), 0,
 					   (struct sockaddr *) &si_other[l], slen) == -1)
 					diep("sendto()");
