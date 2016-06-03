@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <SDL_quit.h>
+#include "players.h"
 
 struct card_struct{
     int suit;
@@ -68,6 +70,7 @@ void DD_trick(char *[],int);
 void FF_hand(char *[]);
 void print_deck(Card []);
 void shuffle_deck(Card [],Card []);
+void Compare(Uint8* , Uint8* , int ,char* [13]);
 #endif
 
 

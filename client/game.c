@@ -108,7 +108,7 @@ int split(char *str,char separator,char *list[]) {
         index = (int) (e - string);
         string[index] = '\0';
         list[i++] = string;
-        list[i] = '\0';
+        list[i] = "";
         string = &string[index + 1];
     }
     return i;
@@ -134,7 +134,7 @@ void DD_trick(char *list[],int pos){
         list[i] = malloc(3);
         if(i==pos) memset(list[i], 'D', 2);
         else memset(list[i], 'F', 2);
-        list[i][2]='\0';
+        strcat(list[i],"");
     }
 }
 
