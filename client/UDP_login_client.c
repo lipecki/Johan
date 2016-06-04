@@ -85,6 +85,9 @@ int main(int argc,char *argv[]) {
     else    printf("bound to channel %d\n",channel);
     int i = 0;
     int done=0;
+    bool have_hand=false;
+    bool played_card[13];
+    memset(played_card,false,13);
     while (!done){
         len=SDLNet_UDP_Send(sd, channel, &udPpacket);
         if (len< 0) {
@@ -109,9 +112,9 @@ int main(int argc,char *argv[]) {
             // do stuff with this new packet
             result=SDLNet_UDP_Recv(sd, packet);
             for(int ind=0; ind < (strlen((char *) packet->data)); ind++) {
-                if ((packet->data[ind] < '0') && (packet->data[ind] > 'z')) packet->data[ind]= 'X';
-                if ((packet->data[ind] == '?')) (packet->data[ind] = 'X');
-                if ((packet->data[ind] == ',')) (packet->data[ind] = 'X');
+                if ((packet->data[ind] < 'A') && (packet->data[ind] < '0') && (packet->data[ind] > '9')) packet->data[ind]= ';';
+                else if ((packet->data[ind] > 'Z') && (packet->data[ind] < 'a')) packet->data[ind] = '\\';
+                else if ((packet->data[ind] > 'z')) packet->data[ind] = '|';
             }
             if(result) {
 
@@ -129,32 +132,60 @@ int main(int argc,char *argv[]) {
                     for (int k = 0; k < 13; k++) {
                         printf("%s ",hand[k]);
                     }
+                    have_hand=true;
                     printf("\n");
                 }
-                strcpy(buffer,(char *) packet->data);
-                split(buffer,';',trick);
-                for (int j = 0; j < 4; j++) {
-                    if(!(strcmp(trick[j],"EE"))) {
-                        printf("player %d starts\n", j);
-                        if(j == my_pos) {
-                            strcpy(trick[j], "00");
-                            printf("changed trick pos %d to: %s", j, trick[j]);
-                            //answer->data = (Uint8 *) strdup("");
-                            for (int n = 0; n < 4; n++) {
-                                strcat(answer->data, (Uint8 *) trick[n]);
-                                strcat(answer->data, ";");
-                            }
-                            printf("\npacket: %s\n", answer->data);
-                            answer->len = 13;
-                            memcpy(&udPpacket, answer, sizeof(UDPpacket));
-                            printf("överkopierad data: %s\n", udPpacket.data);
-                            if ((len = SDLNet_UDP_Send(sd, channel, answer)));// done = 1;
+                else {
+                    strcpy(buffer,(char *) packet->data);
+                    split(buffer,';',trick);
+                    for (int j = 0; j < 4; j++) {
+                        if (!(strcmp(trick[j], "EE"))) {
+                            printf("player %d starts\n", j);
+                            if (j == my_pos) {
+                                for (int k = 0; k < 13; k++) {
+                                    if(is_two_of_clubs(hand[k])) {
+                                        strcpy(trick[j], "00");
+                                        played_card[k]=true;
+                                        break;
+                                    }
+                                    else if((strcmp(hand[k],"FF"))) strcpy(trick[j], hand[k]);
+                                }
 
+                                printf("changed trick pos %d to: %s", j, trick[j]);
+                                //answer->data = (Uint8 *) strdup("");
+                                for (int n = 0; n < 4; n++) {
+                                    strcat(answer->data, (Uint8 *) trick[n]);
+                                    strcat(answer->data, ";");
+                                }
+                                printf("\npacket: %s\n", answer->data);
+                                answer->len = 13;
+                                memcpy(&udPpacket, answer, sizeof(UDPpacket));
+                                printf("överkopierad data: %s\n", udPpacket.data);
+                                if ((len = SDLNet_UDP_Send(sd, channel, answer)));// done = 1;
+
+                            }
+                            else if ((j + 1) % 4 == my_pos && !(strcmp(trick[my_pos], "FF"))) {
+                                //strcpy(trick[j], "00");
+                                strcpy(trick[my_pos], hand[0]);
+                                printf("changed trick pos %d to: %s and pos %d to: %s\n", j, trick[j], my_pos,
+                                       trick[my_pos]);
+                                //answer->data = (Uint8 *) strdup("");
+                                for (int n = 0; n < 4; n++) {
+                                    strcat(answer->data, (Uint8 *) trick[n]);
+                                    strcat(answer->data, ";");
+                                }
+                                printf("\npacket: %s\n", answer->data);
+                                answer->len = 13;
+                                memcpy(&udPpacket, answer, sizeof(UDPpacket));
+                                printf("överkopierad data: %s\n", udPpacket.data);
+                                if ((len = SDLNet_UDP_Send(sd, channel, answer))); //done = 1;
+
+                            }
                         }
-                        else if ((j + 1) % 4 == my_pos && !(strcmp(trick[my_pos], "FF"))) {
-                            strcpy(trick[j],"00");
+                        else if ((j + 2) % 4 == my_pos && (strcmp(trick[(j + 1) % 4], "FF")) &&
+                                 !(strcmp(trick[my_pos], "FF"))) {
                             strcpy(trick[my_pos], hand[0]);
-                            printf("changed trick pos %d to: %s and pos %d to: %s\n", j, trick[j],my_pos,trick[my_pos]);
+                            printf("changed trick pos %d to: %s\n", j, trick[j]);
                             //answer->data = (Uint8 *) strdup("");
                             for (int n = 0; n < 4; n++) {
                                 strcat(answer->data, (Uint8 *) trick[n]);
@@ -164,39 +195,24 @@ int main(int argc,char *argv[]) {
                             answer->len = 13;
                             memcpy(&udPpacket, answer, sizeof(UDPpacket));
                             printf("överkopierad data: %s\n", udPpacket.data);
-                            if ((len = SDLNet_UDP_Send(sd, channel, answer))); //done = 1;
-
+                            if ((len = SDLNet_UDP_Send(sd, channel, answer)));
+                        }
+                        else if (!(strcmp(trick[my_pos], "FF")) && (strcmp(trick[(my_pos + 3) % 4], "FF")) &&
+                                 (strcmp(trick[(my_pos + 3) % 4], "EE"))) {
+                            strcpy(trick[my_pos], hand[0]);
+                            printf("changed trick pos %d to: %s\n", j, trick[j]);
+                            //answer->data = (Uint8 *) strdup("");
+                            for (int n = 0; n < 4; n++) {
+                                strcat(answer->data, (Uint8 *) trick[n]);
+                                strcat(answer->data, ";");
+                            }
+                            printf("\npacket: %s\n", answer->data);
+                            answer->len = 13;
+                            memcpy(&udPpacket, answer, sizeof(UDPpacket));
+                            printf("överkopierad data: %s\n", udPpacket.data);
+                            if ((len = SDLNet_UDP_Send(sd, channel, answer)));
                         }
                     }
-                    else if ((j + 2) % 4 == my_pos && (strcmp(trick[(j + 1) % 4], "FF")) &&!(strcmp(trick[my_pos], "FF"))){
-                        strcpy(trick[my_pos], hand[0]);
-                        printf("changed trick pos %d to: %s\n", j, trick[j]);
-                        //answer->data = (Uint8 *) strdup("");
-                        for (int n = 0; n < 4; n++) {
-                            strcat(answer->data, (Uint8 *) trick[n]);
-                            strcat(answer->data, ";");
-                        }
-                        printf("\npacket: %s\n", answer->data);
-                        answer->len = 13;
-                        memcpy(&udPpacket, answer, sizeof(UDPpacket));
-                        printf("överkopierad data: %s\n", udPpacket.data);
-                        if ((len = SDLNet_UDP_Send(sd, channel, answer)));
-                    }
-                    else if (!(strcmp(trick[my_pos], "FF")) && (strcmp(trick[(my_pos + 3) % 4], "FF")) && (strcmp(trick[(my_pos + 3) % 4], "EE"))){
-                        strcpy(trick[my_pos], hand[0]);
-                        printf("changed trick pos %d to: %s\n", j, trick[j]);
-                        //answer->data = (Uint8 *) strdup("");
-                        for (int n = 0; n < 4; n++) {
-                            strcat(answer->data, (Uint8 *) trick[n]);
-                            strcat(answer->data, ";");
-                        }
-                        printf("\npacket: %s\n", answer->data);
-                        answer->len = 13;
-                        memcpy(&udPpacket, answer, sizeof(UDPpacket));
-                        printf("överkopierad data: %s\n", udPpacket.data);
-                        if ((len = SDLNet_UDP_Send(sd, channel, answer)));
-                    }
-
                 }
 
                 fd = fopen(log_string, "a+");

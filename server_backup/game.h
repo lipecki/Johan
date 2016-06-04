@@ -72,6 +72,7 @@ void print_deck(Card []);
 void shuffle_deck(Card [],Card []);
 int find_DD(char *[],int);
 void EE_trick(char *[],int);
+int count_FF(char*);
 #endif
 
 
