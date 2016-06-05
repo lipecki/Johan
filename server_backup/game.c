@@ -6,7 +6,6 @@
 
 
 #include "game.h"
-#include <string.h>
 
 int calculate_trick(char* card[]){
     int score = 0;
@@ -17,10 +16,6 @@ int calculate_trick(char* card[]){
     return score;
 }
 int check_winner(char *trick[],int player_pos_of_starting_hand) {
-    char *tmp[4];
-    memcpy(tmp,trick,sizeof(*trick));
-    printf("Trick tmp: ");
-    for (int j = 0; j < 4; j++) printf("%s ",trick[j]);
     char hand_suit = trick[player_pos_of_starting_hand][0];
     char high_card[3] = {'\0'};
     char tmp_card[3] = {'\0'};
@@ -110,18 +105,14 @@ int split(char *str,char separator,char *list[]) {
     char *e, *string;
     char sep[] = {separator,'\0'};
     string = str;
-
-    //making sure the last character is a separator
     if (str[((int) strlen(str))-1] != separator) strcat(string,sep);
 
     while((e = strchr(string, separator)) && i < 20) {
         index = (int) (e - string);
         string[index] = '\0';
-        list[i] = string;
-        list[i][2]='\0';
-        list[i][3]='\0';
+        list[i++] = string;
+        list[i] = "";
         string = &string[index + 1];
-        i++;
     }
     return i;
 }
@@ -239,23 +230,6 @@ void FF_hand(char *hand[]){
     int i =0;
     while(i < 3) FF_trick(&hand[(i++)*4]);
     FF_trick(&hand[9]);
-}
-//counts occurances of "FF" in string
-int count_FF(char *string){
-    char *str;
-    int index=0, i=0;
-    while((str=strstr(string,"FF"))){
-
-        // if the string pointer points to FF, count and move to next FF or end of string
-        if(!(index = (int) (str - string))){    //index calculator
-            string = &string[3];
-            i++;
-            continue;
-        }
-            // if FF is further on up the string, move there and don't count it just yet
-        else string = &string[index];
-    }
-    return i;
 }
 
 

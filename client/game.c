@@ -134,7 +134,7 @@ void DD_trick(char *list[],int pos){
         list[i] = malloc(3);
         if(i==pos) memset(list[i], 'D', 2);
         else memset(list[i], 'F', 2);
-        list[i][2]='\0';
+        strcat(list[i],"");
     }
 }
 
@@ -200,3 +200,6 @@ void print_deck(Card deck[])
     }
     printf("\n\n");
 }
+
+
+
